@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#185FA5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="AI REBUILD">
+<title>AI REBUILD SOFTWARE — Roadmap</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-secondary: #f4f4f1;
+    --bg-tertiary: #fafaf9;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6b6a65;
+    --text-tertiary: #999996;
+    --border: rgba(0, 0, 0, 0.08);
+    --border-strong: rgba(0, 0, 0, 0.15);
+    --primary: #185FA5;
+    --primary-bg: #E6F1FB;
+    --success: #0F6E56;
+    --success-bg: #E1F5EE;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a1a;
+      --bg-secondary: #262625;
+      --bg-tertiary: #2a2a29;
+      --text-primary: #f4f4f1;
+      --text-secondary: #adacaa;
+      --text-tertiary: #6b6a65;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.15);
+      --primary: #378ADD;
+      --primary-bg: #042C53;
+      --success: #5DCAA5;
+      --success-bg: #085041;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px;
+    padding-bottom: 48px;
+    padding-bottom: max(48px, env(safe-area-inset-bottom));
+  }
+
+  @media (min-width: 600px) {
+    .container { padding: 24px; }
+  }
+
+  .header {
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+    padding: 12px 0;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    letter-spacing: -0.01em;
+  }
+
+  .header .subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+  }
+
+  .progress-bar-wrap {
+    height: 6px;
+    background: var(--bg-secondary);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--primary);
+    transition: width 0.3s;
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+  }
+
+  .achievements {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  @media (min-width: 480px) {
+    .achievements-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (min-width: 700px) {
+    .achievements-grid { grid-template-columns: 1fr 1fr 1fr; }
+  }
+
+  .achievement-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .achievement-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .achievement-input {
+    height: 36px;
+    padding: 6px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: inherit;
+  }
+
+  .achievement-input:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  .phase {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+
+  .phase-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+    cursor: pointer;
+    gap: 12px;
+    user-select: none;
+  }
+
+  .phase-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .phase-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .phase-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .phase-toggle {
+    transition: transform 0.2s;
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+  }
+
+  .phase.collapsed .phase-toggle {
+    transform: rotate(-90deg);
+  }
+
+  .phase.collapsed .phase-tasks {
+    display: none;
+  }
+
+  .phase-tasks {
+    margin-top: 12px;
+    border-top: 0.5px solid var(--border);
+  }
+
+  .phase.all-done .phase-title {
+    color: var(--success);
+  }
+
+  .task {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    cursor: pointer;
+    border-bottom: 0.5px solid var(--border);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .task:last-child { border-bottom: none; }
+
+  .task-checkbox {
+    margin: 0;
+    margin-top: 2px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    cursor: pointer;
+    accent-color: var(--primary);
+  }
+
+  .task-label {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .task.done .task-label {
+    color: var(--text-tertiary);
+    text-decoration: line-through;
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  button {
+    font-family: inherit;
+    font-size: 13px;
+    padding: 9px 14px;
+    background: var(--bg);
+    color: var(--text-primary);
+    border: 0.5px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 38px;
+  }
+
+  button:active { transform: scale(0.98); }
+
+  button.primary {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+
+  .loading {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 32px;
+    font-size: 14px;
+  }
+
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 24px;
+  }
+
+  .footer a {
+    color: var(--text-tertiary);
+    text-decoration: none;
+  }
+
+  .phase-badge-done {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--success-bg);
+    color: var(--success);
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header class="header">
+    <h1>AI REBUILD SOFTWARE S.R.L.</h1>
+    <div class="subtitle">Roadmap înmatriculare · estimat 10–12 zile lucrătoare</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="overall-bar" style="width: 0%"></div>
+    </div>
+    <div class="progress-meta">
+      <span id="overall-pct">0/0 (0%)</span>
+      <span id="last-saved"></span>
+    </div>
+  </header>
+
+  <div class="achievements">
+    <h2 class="section-title">
+      <i class="ti ti-id-badge-2" style="font-size: 18px;"></i>
+      Date cheie
+    </h2>
+    <div class="achievements-grid" id="achievements"></div>
+  </div>
+
+  <div id="phases">
+    <div class="loading">Se încarcă...</div>
+  </div>
+
+  <div class="actions">
+    <button onclick="resetAll()">
+      <i class="ti ti-refresh"></i> Resetează
+    </button>
+    <button onclick="exportJSON()">
+      <i class="ti ti-download"></i> Export
+    </button>
+    <button onclick="document.getElementById('import-file').click()">
+      <i class="ti ti-upload"></i> Import
+    </button>
+    <button class="primary" onclick="window.open('https://claude.ai', '_blank')">
+      <i class="ti ti-message-2"></i> Întreabă Claude
+    </button>
+    <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importJSON(event)">
+  </div>
+
+  <div class="footer">
+    Salvat local pe dispozitiv · Datele NU sunt trimise nicăieri
+  </div>
+</div>
+
+<script>
+const ROADMAP = [
+  { id: 'p1', title: 'Faza 1 — Pregătire & verificări', meta: 'Zilele 1-2', tasks: [
+    { id: 't1_1', label: 'Finalizare rezervare denumire pe portal ONRC (pașii 5-8)' },
+    { id: 't1_2', label: 'Plată taxă rezervare denumire (~72 lei)' },
+    { id: 't1_3', label: 'Comandă extras CF pe epay.ancpi.ro (~25 lei)' },
+    { id: 't1_4', label: 'Verificare extras CF: soacra e proprietar exclusiv?' },
+    { id: 't1_5', label: 'Verificare extras CF: situația sarcinilor (ipotecă)' },
+    { id: 't1_6', label: 'Sună soacra pentru tipul actului de proprietate' },
+    { id: 't1_7', label: 'Decide capital social (recomandare: 500 lei)' },
+    { id: 't1_8', label: 'Decide coduri CAEN (6201 principal + 6202, 6209, 7022)' },
+    { id: 't1_9', label: 'Achiziție semnătură electronică calificată (CertSign)' },
+    { id: 't1_10', label: 'Descarcă cazier fiscal din SPV ANAF' },
+  ]},
+  { id: 'p2', title: 'Faza 2 — Documente sediu social', meta: 'Ziua 3', tasks: [
+    { id: 't2_1', label: 'Completare contract de comodat cu date complete' },
+    { id: 't2_2', label: 'Completare declarație proprietar (varianta curată)' },
+    { id: 't2_3', label: 'Adunare copie CI soacră' },
+    { id: 't2_4', label: 'Adunare copie act de proprietate al soacrei' },
+  ]},
+  { id: 'p3', title: 'Faza 3 — Documente constitutive', meta: 'Ziua 3-4', tasks: [
+    { id: 't3_1', label: 'Act constitutiv SRL cu asociat unic' },
+    { id: 't3_2', label: 'Hotărâre asociat unic (numire administrator)' },
+    { id: 't3_3', label: 'Declarație beneficiar real' },
+    { id: 't3_4', label: 'Declarație pe propria răspundere asociat' },
+    { id: 't3_5', label: 'Specimen de semnătură administrator (notar sau ONRC)' },
+  ]},
+  { id: 'p4', title: 'Faza 4 — Semnături la Păulești', meta: 'Ziua 4', tasks: [
+    { id: 't4_1', label: 'Drum la Păulești' },
+    { id: 't4_2', label: 'Semnare contract comodat (3 exemplare originale)' },
+    { id: 't4_3', label: 'Semnare declarație proprietar (1 exemplar)' },
+  ]},
+  { id: 'p5', title: 'Faza 5 — Bancă (capital social)', meta: 'Ziua 5', tasks: [
+    { id: 't5_1', label: 'Alegere bancă (BT sau ING recomandat)' },
+    { id: 't5_2', label: 'Deschidere cont de capital social' },
+    { id: 't5_3', label: 'Depunere capital social' },
+    { id: 't5_4', label: 'Obținere foaie de vărsământ' },
+  ]},
+  { id: 'p6', title: 'Faza 6 — Depunere dosar ONRC', meta: 'Ziua 6', tasks: [
+    { id: 't6_1', label: 'Semnare electronică toate documentele' },
+    { id: 't6_2', label: 'Plată taxe ONRC (~250-400 lei)' },
+    { id: 't6_3', label: 'Depunere dosar complet pe portal.onrc.ro' },
+  ]},
+  { id: 'p7', title: 'Faza 7 — Procesare & finalizare', meta: 'Zilele 7-12', tasks: [
+    { id: 't7_1', label: 'Așteptare procesare ONRC (3-5 zile lucrătoare)' },
+    { id: 't7_2', label: 'Primire CUI + Certificat înregistrare' },
+    { id: 't7_3', label: 'Activare cont curent operațional la bancă' },
+    { id: 't7_4', label: 'Înregistrare ANAF (vector fiscal microîntreprindere)' },
+    { id: 't7_5', label: 'Semnare contract cu contabilul' },
+  ]},
+];
+
+const ACHIEVEMENTS = [
+  { id: 'a_rezervare', label: 'Nr. rezervare denumire' },
+  { id: 'a_cf', label: 'Nr. Carte Funciară' },
+  { id: 'a_cadastral', label: 'Nr. cadastral' },
+  { id: 'a_act_prop', label: 'Tip act proprietate' },
+  { id: 'a_banca', label: 'Bancă cont firmă' },
+  { id: 'a_caen', label: 'CAEN principal' },
+  { id: 'a_capital', label: 'Capital social (lei)' },
+  { id: 'a_cui', label: 'CUI' },
+  { id: 'a_j_onrc', label: 'Nr. J ONRC' },
+];
+
+const STORAGE_KEY = 'air_rebuild_roadmap_v1';
+const COLLAPSED_KEY = 'air_rebuild_collapsed_v1';
+let state = { checked: {}, achievements: {} };
+let collapsed = {};
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      state.checked = parsed.checked || {};
+      state.achievements = parsed.achievements || {};
+    }
+    const col = localStorage.getItem(COLLAPSED_KEY);
+    if (col) collapsed = JSON.parse(col);
+  } catch (e) {}
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    const t = new Date().toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('last-saved').textContent = 'Salvat ' + t;
+  } catch (e) {}
+}
+
+function saveCollapsed() {
+  try {
+    localStorage.setItem(COLLAPSED_KEY, JSON.stringify(collapsed));
+  } catch (e) {}
+}
+
+function calculatePhaseProgress(phase) {
+  const done = phase.tasks.filter(t => state.checked[t.id]).length;
+  const total = phase.tasks.length;
+  return { done, total };
+}
+
+function calculateOverallProgress() {
+  const all = ROADMAP.flatMap(p => p.tasks);
+  const done = all.filter(t => state.checked[t.id]).length;
+  return { done, total: all.length, pct: all.length ? Math.round((done / all.length) * 100) : 0 };
+}
+
+function renderAchievements() {
+  const grid = document.getElementById('achievements');
+  grid.innerHTML = ACHIEVEMENTS.map(a =>
+    '<div class="achievement-item">' +
+      '<label class="achievement-label" for="' + a.id + '">' + a.label + '</label>' +
+      '<input type="text" id="' + a.id + '" class="achievement-input" placeholder="–" value="' + escapeHtml(state.achievements[a.id] || '') + '" />' +
+    '</div>'
+  ).join('');
+  grid.addEventListener('input', (e) => {
+    if (e.target.classList.contains('achievement-input')) {
+      state.achievements[e.target.id] = e.target.value;
+      saveState();
+    }
+  });
+}
+
+function renderPhases() {
+  const container = document.getElementById('phases');
+  container.innerHTML = ROADMAP.map(phase => {
+    const prog = calculatePhaseProgress(phase);
+    const isComplete = prog.done === prog.total;
+    const isCollapsed = collapsed[phase.id] === true;
+    const phaseMeta = isComplete
+      ? '<span class="phase-badge-done"><i class="ti ti-check" style="font-size: 12px;"></i>Gata</span>'
+      : prog.done + '/' + prog.total + ' · ' + phase.meta;
+    return '<div class="phase ' + (isCollapsed ? 'collapsed' : '') + ' ' + (isComplete ? 'all-done' : '') + '" data-phase="' + phase.id + '">' +
+      '<div class="phase-header" data-toggle="' + phase.id + '">' +
+        '<div class="phase-title-wrap">' +
+          '<span class="phase-toggle"><i class="ti ti-chevron-down" style="font-size: 16px;"></i></span>' +
+          '<h2 class="phase-title">' + phase.title + '</h2>' +
+        '</div>' +
+        '<span class="phase-meta" data-phase-meta="' + phase.id + '">' + phaseMeta + '</span>' +
+      '</div>' +
+      '<div class="phase-tasks">' +
+        phase.tasks.map(t =>
+          '<label class="task ' + (state.checked[t.id] ? 'done' : '') + '">' +
+            '<input type="checkbox" id="' + t.id + '" class="task-checkbox" data-phase="' + phase.id + '" ' + (state.checked[t.id] ? 'checked' : '') + ' />' +
+            '<span class="task-label">' + t.label + '</span>' +
+          '</label>'
+        ).join('') +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  container.addEventListener('change', (e) => {
+    if (e.target.classList.contains('task-checkbox')) {
+      const id = e.target.id;
+      state.checked[id] = e.target.checked;
+      saveState();
+      e.target.closest('.task').classList.toggle('done', e.target.checked);
+      const phaseId = e.target.dataset.phase;
+      const phase = ROADMAP.find(p => p.id === phaseId);
+      if (phase) {
+        const prog = calculatePhaseProgress(phase);
+        const isComplete = prog.done === prog.total;
+        const metaEl = document.querySelector('[data-phase-meta="' + phaseId + '"]');
+        if (metaEl) {
+          metaEl.innerHTML = isComplete
+            ? '<span class="phase-badge-done"><i class="ti ti-check" style="font-size: 12px;"></i>Gata</span>'
+            : prog.done + '/' + prog.total + ' · ' + phase.meta;
+        }
+        const phaseEl = document.querySelector('[data-phase="' + phaseId + '"]');
+        if (phaseEl) phaseEl.classList.toggle('all-done', isComplete);
+      }
+      updateOverall();
+    }
+  });
+
+  container.addEventListener('click', (e) => {
+    const header = e.target.closest('.phase-header');
+    if (header && !e.target.closest('.task') && !e.target.closest('input')) {
+      const phaseId = header.dataset.toggle;
+      collapsed[phaseId] = !collapsed[phaseId];
+      saveCollapsed();
+      const phaseEl = document.querySelector('[data-phase="' + phaseId + '"]');
+      if (phaseEl) phaseEl.classList.toggle('collapsed', collapsed[phaseId]);
+    }
+  });
+}
+
+function updateOverall() {
+  const o = calculateOverallProgress();
+  document.getElementById('overall-pct').textContent = o.done + '/' + o.total + ' (' + o.pct + '%)';
+  document.getElementById('overall-bar').style.width = o.pct + '%';
+}
+
+function resetAll() {
+  if (confirm('Sigur vrei să resetezi tot progresul?')) {
+    state = { checked: {}, achievements: {} };
+    collapsed = {};
+    saveState();
+    saveCollapsed();
+    renderAchievements();
+    renderPhases();
+    updateOverall();
+  }
+}
+
+function exportJSON() {
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const date = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = 'air-rebuild-roadmap-' + date + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      if (parsed.checked || parsed.achievements) {
+        if (confirm('Înlocuiește progresul curent cu cel din fișier?')) {
+          state.checked = parsed.checked || {};
+          state.achievements = parsed.achievements || {};
+          saveState();
+          renderAchievements();
+          renderPhases();
+          updateOverall();
+        }
+      } else {
+        alert('Fișier invalid.');
+      }
+    } catch (err) {
+      alert('Eroare la citirea fișierului: ' + err.message);
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+loadState();
+renderAchievements();
+renderPhases();
+updateOverall();
+</script>
+</body>
+</html>
