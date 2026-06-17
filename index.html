@@ -7,8 +7,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="AI REBUILD">
-<title>AI REBUILD SOFTWARE — Roadmap</title>
+<title>AI REBUILD SOFTWARE — Control Center</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/docx@9.6.1/build/index.umd.min.js"></script>
 <style>
   :root {
     --bg: #ffffff;
@@ -23,10 +24,12 @@
     --primary-bg: #E6F1FB;
     --success: #0F6E56;
     --success-bg: #E1F5EE;
+    --warning: #BA7517;
+    --warning-bg: #FAEEDA;
     --radius-md: 8px;
     --radius-lg: 12px;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
-
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #1a1a1a;
@@ -41,342 +44,426 @@
       --primary-bg: #042C53;
       --success: #5DCAA5;
       --success-bg: #085041;
+      --warning: #EF9F27;
+      --warning-bg: #412402;
     }
   }
-
   * { box-sizing: border-box; }
-
   body {
-    margin: 0;
-    padding: 0;
+    margin: 0; padding: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text-primary);
+    background: var(--bg); color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
+    padding-bottom: calc(70px + var(--safe-bottom));
   }
+  .container { max-width: 800px; margin: 0 auto; padding: 16px; }
+  @media (min-width: 600px) { .container { padding: 24px; } }
 
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 16px;
-    padding-bottom: 48px;
-    padding-bottom: max(48px, env(safe-area-inset-bottom));
-  }
-
-  @media (min-width: 600px) {
-    .container { padding: 24px; }
-  }
-
-  .header {
-    position: sticky;
-    top: 0;
-    background: var(--bg);
-    z-index: 10;
-    padding: 12px 0;
+  .topbar {
+    position: sticky; top: 0; background: var(--bg);
+    z-index: 20; padding: 14px 16px 10px;
     border-bottom: 0.5px solid var(--border);
-    margin-bottom: 16px;
   }
+  .topbar-inner { max-width: 800px; margin: 0 auto; }
+  .topbar h1 { font-size: 18px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  .topbar .subtitle { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .progress-bar-wrap { height: 4px; background: var(--bg-secondary); border-radius: 2px; overflow: hidden; margin-top: 10px; }
+  .progress-bar-fill { height: 100%; background: var(--primary); transition: width 0.3s; }
 
-  .header h1 {
-    font-size: 20px;
-    font-weight: 600;
-    margin: 0 0 4px 0;
-    letter-spacing: -0.01em;
+  .tabbar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--bg); border-top: 0.5px solid var(--border);
+    display: flex; z-index: 30;
+    padding-bottom: var(--safe-bottom);
   }
+  .tab {
+    flex: 1; padding: 10px 4px 8px; text-align: center;
+    background: none; border: none; cursor: pointer;
+    color: var(--text-secondary); font-family: inherit;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  .tab i { font-size: 22px; }
+  .tab-label { font-size: 11px; font-weight: 500; }
+  .tab.active { color: var(--primary); }
 
-  .header .subtitle {
-    font-size: 13px;
-    color: var(--text-secondary);
+  .view { display: none; }
+  .view.active { display: block; }
+
+  .section {
+    background: var(--bg); border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg); padding: 16px;
     margin-bottom: 12px;
   }
-
-  .progress-bar-wrap {
-    height: 6px;
-    background: var(--bg-secondary);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-
-  .progress-bar-fill {
-    height: 100%;
-    background: var(--primary);
-    transition: width 0.3s;
-  }
-
-  .progress-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: var(--text-secondary);
-    margin-top: 6px;
-  }
-
-  .achievements {
-    background: var(--bg-secondary);
-    border-radius: var(--radius-lg);
-    padding: 16px;
-    margin-bottom: 16px;
-  }
-
   .section-title {
-    font-size: 15px;
-    font-weight: 600;
-    margin: 0 0 12px 0;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    font-size: 15px; font-weight: 600; margin: 0 0 12px 0;
+    display: flex; align-items: center; gap: 6px;
   }
+  .section-title i { font-size: 18px; color: var(--text-secondary); }
+  .section-subtitle { font-size: 12px; color: var(--text-secondary); margin: -8px 0 12px 0; }
 
-  .achievements-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
+  .form-grid {
+    display: grid; grid-template-columns: 1fr; gap: 10px;
   }
+  @media (min-width: 480px) { .form-grid { grid-template-columns: 1fr 1fr; } }
+  .form-grid.three { grid-template-columns: 1fr; }
+  @media (min-width: 600px) { .form-grid.three { grid-template-columns: 1fr 1fr 1fr; } }
+  .form-grid.full { grid-template-columns: 1fr; }
 
-  @media (min-width: 480px) {
-    .achievements-grid { grid-template-columns: 1fr 1fr; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 12px; color: var(--text-secondary); }
+  .field input, .field textarea, .field select {
+    height: 36px; padding: 6px 10px;
+    border: 1px solid var(--border-strong); border-radius: var(--radius-md);
+    background: var(--bg); color: var(--text-primary);
+    font-size: 14px; font-family: inherit;
   }
-
-  @media (min-width: 700px) {
-    .achievements-grid { grid-template-columns: 1fr 1fr 1fr; }
+  .field textarea { height: auto; min-height: 60px; resize: vertical; padding: 8px 10px; }
+  .field input:focus, .field textarea:focus, .field select:focus {
+    outline: none; border-color: var(--primary);
   }
-
-  .achievement-item {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .achievement-label {
-    font-size: 12px;
-    color: var(--text-secondary);
-  }
-
-  .achievement-input {
-    height: 36px;
-    padding: 6px 10px;
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-md);
-    background: var(--bg);
-    color: var(--text-primary);
-    font-size: 14px;
-    font-family: inherit;
-  }
-
-  .achievement-input:focus {
-    outline: none;
-    border-color: var(--primary);
-  }
+  .field.full { grid-column: 1 / -1; }
+  .field .hint { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
 
   .phase {
-    background: var(--bg);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 14px 16px;
-    margin-bottom: 12px;
+    background: var(--bg); border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg); padding: 14px 16px;
+    margin-bottom: 10px;
   }
-
   .phase-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 4px;
-    cursor: pointer;
-    gap: 12px;
-    user-select: none;
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; gap: 12px; user-select: none;
   }
-
-  .phase-title-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-    min-width: 0;
-  }
-
-  .phase-title {
-    font-size: 15px;
-    font-weight: 600;
-    margin: 0;
-  }
-
-  .phase-meta {
-    font-size: 12px;
-    color: var(--text-secondary);
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .phase-toggle {
-    transition: transform 0.2s;
-    color: var(--text-tertiary);
-    display: flex;
-    align-items: center;
-  }
-
-  .phase.collapsed .phase-toggle {
-    transform: rotate(-90deg);
-  }
-
-  .phase.collapsed .phase-tasks {
-    display: none;
-  }
-
-  .phase-tasks {
-    margin-top: 12px;
-    border-top: 0.5px solid var(--border);
-  }
-
-  .phase.all-done .phase-title {
-    color: var(--success);
-  }
+  .phase-title-wrap { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+  .phase-title { font-size: 14px; font-weight: 600; margin: 0; }
+  .phase-meta { font-size: 12px; color: var(--text-secondary); white-space: nowrap; }
+  .phase-toggle { transition: transform 0.2s; color: var(--text-tertiary); display: flex; }
+  .phase.collapsed .phase-toggle { transform: rotate(-90deg); }
+  .phase.collapsed .phase-tasks { display: none; }
+  .phase-tasks { margin-top: 10px; padding-top: 4px; border-top: 0.5px solid var(--border); }
+  .phase.all-done .phase-title { color: var(--success); }
 
   .task {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 12px 0;
-    cursor: pointer;
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 0; cursor: pointer;
     border-bottom: 0.5px solid var(--border);
-    -webkit-tap-highlight-color: transparent;
   }
-
   .task:last-child { border-bottom: none; }
-
   .task-checkbox {
-    margin: 0;
-    margin-top: 2px;
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-    cursor: pointer;
-    accent-color: var(--primary);
+    margin: 0; margin-top: 2px;
+    width: 20px; height: 20px; flex-shrink: 0;
+    cursor: pointer; accent-color: var(--primary);
   }
-
-  .task-label {
-    flex: 1;
-    font-size: 14px;
-    line-height: 1.5;
-  }
-
-  .task.done .task-label {
-    color: var(--text-tertiary);
-    text-decoration: line-through;
-  }
-
-  .actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-  }
-
-  button {
-    font-family: inherit;
-    font-size: 13px;
-    padding: 9px 14px;
-    background: var(--bg);
-    color: var(--text-primary);
-    border: 0.5px solid var(--border-strong);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    min-height: 38px;
-  }
-
-  button:active { transform: scale(0.98); }
-
-  button.primary {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-  }
-
-  .loading {
-    text-align: center;
-    color: var(--text-secondary);
-    padding: 32px;
-    font-size: 14px;
-  }
-
-  .footer {
-    text-align: center;
-    font-size: 11px;
-    color: var(--text-tertiary);
-    margin-top: 24px;
-  }
-
-  .footer a {
-    color: var(--text-tertiary);
-    text-decoration: none;
-  }
+  .task-label { flex: 1; font-size: 14px; line-height: 1.5; }
+  .task.done .task-label { color: var(--text-tertiary); text-decoration: line-through; }
 
   .phase-badge-done {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background: var(--success-bg);
-    color: var(--success);
-    padding: 3px 8px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 500;
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--success-bg); color: var(--success);
+    padding: 2px 8px; border-radius: 999px;
+    font-size: 11px; font-weight: 500;
+  }
+
+  .doc-card {
+    background: var(--bg); border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg); padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .doc-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin-bottom: 6px;
+  }
+  .doc-card-title { font-size: 14px; font-weight: 600; margin: 0; }
+  .doc-card-desc { font-size: 12px; color: var(--text-secondary); margin: 0 0 12px 0; }
+  .doc-card-status {
+    font-size: 11px; padding: 2px 8px; border-radius: 999px;
+    background: var(--bg-secondary); color: var(--text-secondary);
+  }
+  .doc-card-status.ready { background: var(--success-bg); color: var(--success); }
+  .doc-card-status.partial { background: var(--warning-bg); color: var(--warning); }
+  .doc-card-missing {
+    font-size: 11px; color: var(--warning);
+    background: var(--warning-bg); padding: 6px 10px;
+    border-radius: var(--radius-md); margin: 8px 0;
+    display: none;
+  }
+  .doc-card-missing.show { display: block; }
+  .doc-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  button {
+    font-family: inherit; font-size: 13px;
+    padding: 8px 12px;
+    background: var(--bg); color: var(--text-primary);
+    border: 0.5px solid var(--border-strong); border-radius: var(--radius-md);
+    cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    min-height: 36px;
+  }
+  button i { font-size: 16px; }
+  button:active { transform: scale(0.98); }
+  button.primary { background: var(--primary); color: white; border-color: var(--primary); }
+  button.small { padding: 6px 10px; font-size: 12px; min-height: 30px; }
+
+  .info-card {
+    background: var(--primary-bg); color: var(--text-primary);
+    padding: 12px 14px; border-radius: var(--radius-md);
+    font-size: 13px; margin-bottom: 12px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .info-card i { color: var(--primary); flex-shrink: 0; margin-top: 2px; }
+
+  .modal-backdrop {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.5); z-index: 100;
+    display: none; align-items: center; justify-content: center;
+    padding: 16px;
+  }
+  .modal-backdrop.show { display: flex; }
+  .modal {
+    background: var(--bg); border-radius: var(--radius-lg);
+    width: 100%; max-width: 700px; max-height: 90vh;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .modal-header {
+    padding: 14px 16px; border-bottom: 0.5px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-shrink: 0;
+  }
+  .modal-title { font-size: 15px; font-weight: 600; margin: 0; }
+  .modal-close {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-secondary); padding: 4px; min-height: auto;
+  }
+  .modal-body {
+    padding: 20px 24px; overflow-y: auto; flex: 1;
+    font-size: 14px; line-height: 1.6;
+  }
+  .modal-body h1 { font-size: 18px; text-align: center; margin: 0 0 16px 0; }
+  .modal-body h2 { font-size: 15px; margin: 16px 0 8px 0; font-weight: 600; }
+  .modal-body p { margin: 0 0 10px 0; text-align: justify; }
+  .modal-footer {
+    padding: 12px 16px; border-top: 0.5px solid var(--border);
+    display: flex; gap: 8px; flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+  .placeholder-missing { color: var(--warning); font-weight: 500; }
+
+  .actions-row { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+
+  .footer {
+    text-align: center; font-size: 11px;
+    color: var(--text-tertiary); margin-top: 20px;
+    padding-bottom: 10px;
   }
 </style>
 </head>
 <body>
-<div class="container">
-  <header class="header">
+<header class="topbar">
+  <div class="topbar-inner">
     <h1>AI REBUILD SOFTWARE S.R.L.</h1>
-    <div class="subtitle">Roadmap înmatriculare · estimat 10–12 zile lucrătoare</div>
-    <div class="progress-bar-wrap">
-      <div class="progress-bar-fill" id="overall-bar" style="width: 0%"></div>
+    <div class="subtitle" id="header-subtitle">Control Center · 0/0 (0%)</div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="overall-bar" style="width: 0%"></div></div>
+  </div>
+</header>
+
+<div class="container">
+  <!-- ROADMAP VIEW -->
+  <div class="view active" id="view-progres">
+    <div class="section">
+      <h2 class="section-title"><i class="ti ti-id-badge-2"></i>Date cheie</h2>
+      <div class="form-grid three" id="achievements"></div>
     </div>
-    <div class="progress-meta">
-      <span id="overall-pct">0/0 (0%)</span>
-      <span id="last-saved"></span>
+    <div id="phases"></div>
+  </div>
+
+  <!-- DATE VIEW -->
+  <div class="view" id="view-date">
+    <div class="info-card">
+      <i class="ti ti-info-circle"></i>
+      <div>Completează datele aici. Sunt salvate local, doar pe dispozitivul tău. Apoi mergi la <b>Documente</b> pentru generare.</div>
     </div>
-  </header>
 
-  <div class="achievements">
-    <h2 class="section-title">
-      <i class="ti ti-id-badge-2" style="font-size: 18px;"></i>
-      Date cheie
-    </h2>
-    <div class="achievements-grid" id="achievements"></div>
+    <div class="section">
+      <h2 class="section-title"><i class="ti ti-user"></i>Asociat unic (tu)</h2>
+      <div class="form-grid" id="form-asociat"></div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title"><i class="ti ti-home"></i>Proprietar imobil (soacră)</h2>
+      <div class="form-grid" id="form-proprietar"></div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title"><i class="ti ti-building"></i>Imobil sediu social</h2>
+      <div class="form-grid" id="form-imobil"></div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title"><i class="ti ti-briefcase"></i>Companie</h2>
+      <div class="form-grid" id="form-companie"></div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title"><i class="ti ti-building-bank"></i>Bancă</h2>
+      <div class="form-grid" id="form-banca"></div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title"><i class="ti ti-stamp"></i>Date oficiale (după înmatriculare)</h2>
+      <div class="form-grid" id="form-oficial"></div>
+    </div>
   </div>
 
-  <div id="phases">
-    <div class="loading">Se încarcă...</div>
+  <!-- DOCUMENTE VIEW -->
+  <div class="view" id="view-documente">
+    <div class="info-card">
+      <i class="ti ti-info-circle"></i>
+      <div>Documentele se generează din datele introduse la tab-ul <b>Date</b>. Câmpurile lipsă apar ca <span class="placeholder-missing">[...]</span>. Le poți descărca în Word (.docx) sau le poți previzualiza.</div>
+    </div>
+    <div id="documents-list"></div>
   </div>
 
-  <div class="actions">
-    <button onclick="resetAll()">
-      <i class="ti ti-refresh"></i> Resetează
-    </button>
-    <button onclick="exportJSON()">
-      <i class="ti ti-download"></i> Export
-    </button>
-    <button onclick="document.getElementById('import-file').click()">
-      <i class="ti ti-upload"></i> Import
-    </button>
-    <button class="primary" onclick="window.open('https://claude.ai', '_blank')">
-      <i class="ti ti-message-2"></i> Întreabă Claude
-    </button>
-    <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importJSON(event)">
-  </div>
+  <!-- INFO VIEW -->
+  <div class="view" id="view-info">
+    <div class="section">
+      <h2 class="section-title"><i class="ti ti-database"></i>Backup & restaurare</h2>
+      <p class="section-subtitle">Datele sunt salvate doar local pe acest dispozitiv. Exportă regulat pentru siguranță.</p>
+      <div class="actions-row">
+        <button onclick="exportJSON()"><i class="ti ti-download"></i>Export JSON</button>
+        <button onclick="document.getElementById('import-file').click()"><i class="ti ti-upload"></i>Import JSON</button>
+        <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importJSON(event)">
+      </div>
+    </div>
 
-  <div class="footer">
-    Salvat local pe dispozitiv · Datele NU sunt trimise nicăieri
+    <div class="section">
+      <h2 class="section-title"><i class="ti ti-trash"></i>Resetare</h2>
+      <p class="section-subtitle">Șterge tot progresul și toate datele. Acțiune ireversibilă.</p>
+      <div class="actions-row">
+        <button onclick="resetAll()" style="border-color: #E24B4A; color: #A32D2D;"><i class="ti ti-trash"></i>Resetează tot</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title"><i class="ti ti-message-2"></i>Continuă cu Claude</h2>
+      <p class="section-subtitle">Deschide claude.ai pentru întrebări sau ajustări pe documente.</p>
+      <div class="actions-row">
+        <button class="primary" onclick="window.open('https://claude.ai', '_blank')"><i class="ti ti-external-link"></i>Deschide Claude</button>
+      </div>
+    </div>
+
+    <div class="footer">
+      Versiune 1.0 · Datele rămân pe dispozitiv · Niciun server, niciun tracking
+    </div>
+  </div>
+</div>
+
+<!-- Tab bar -->
+<nav class="tabbar">
+  <button class="tab active" data-view="progres" onclick="switchView('progres')">
+    <i class="ti ti-checklist"></i><span class="tab-label">Progres</span>
+  </button>
+  <button class="tab" data-view="date" onclick="switchView('date')">
+    <i class="ti ti-clipboard-text"></i><span class="tab-label">Date</span>
+  </button>
+  <button class="tab" data-view="documente" onclick="switchView('documente')">
+    <i class="ti ti-file-text"></i><span class="tab-label">Documente</span>
+  </button>
+  <button class="tab" data-view="info" onclick="switchView('info')">
+    <i class="ti ti-settings"></i><span class="tab-label">Setări</span>
+  </button>
+</nav>
+
+<!-- Document preview modal -->
+<div class="modal-backdrop" id="modal-backdrop" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-title">Previzualizare</h2>
+      <button class="modal-close" onclick="closeModal()"><i class="ti ti-x" style="font-size: 22px;"></i></button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button onclick="closeModal()"><i class="ti ti-arrow-back-up"></i>Înapoi</button>
+      <button onclick="downloadCurrentDocx()" class="primary"><i class="ti ti-download"></i>Descarcă Word</button>
+      <button onclick="printCurrent()"><i class="ti ti-printer"></i>Print / PDF</button>
+    </div>
   </div>
 </div>
 
 <script>
+// ============================================
+// SCHEMA — DATA FIELDS
+// ============================================
+const FIELDS = {
+  asociat: [
+    { id: 'nume', label: 'Nume', col: 1 },
+    { id: 'prenume', label: 'Prenume', col: 1 },
+    { id: 'cnp', label: 'CNP', col: 1, hint: '13 cifre' },
+    { id: 'serieCi', label: 'Serie CI', col: 1 },
+    { id: 'nrCi', label: 'Nr. CI', col: 1 },
+    { id: 'dataNasterii', label: 'Data nașterii (ZZ.LL.AAAA)', col: 1 },
+    { id: 'loculNasterii', label: 'Locul nașterii', col: 1, hint: 'ex: Mun. București, sector 3' },
+    { id: 'cetatenia', label: 'Cetățenia', col: 1, default: 'română' },
+    { id: 'domiciliu', label: 'Domiciliu complet', col: 2, full: true },
+    { id: 'emitentCi', label: 'Emitent CI', col: 1, hint: 'ex: SPCLEP Sector 3' },
+    { id: 'dataEmiteriiCi', label: 'Data emiterii CI', col: 1 },
+    { id: 'email', label: 'Email', col: 1 },
+    { id: 'telefon', label: 'Telefon', col: 1 },
+  ],
+  proprietar: [
+    { id: 'nume', label: 'Nume', default: 'NICULAE' },
+    { id: 'prenume', label: 'Prenume', default: 'GABRIELA-VIORICA' },
+    { id: 'cnp', label: 'CNP', default: '2720809293164' },
+    { id: 'serieCi', label: 'Serie CI', default: 'PX' },
+    { id: 'nrCi', label: 'Nr. CI', default: '763952' },
+    { id: 'dataNasterii', label: 'Data nașterii', default: '09.08.1972' },
+    { id: 'loculNasterii', label: 'Locul nașterii', default: 'Mun. Pitești, jud. Argeș' },
+    { id: 'cetatenia', label: 'Cetățenia', default: 'română' },
+    { id: 'domiciliu', label: 'Domiciliu complet', full: true, default: 'Str. Butărești nr. 61B, Sat Păulești, Comuna Păulești, județul Prahova' },
+    { id: 'emitentCi', label: 'Emitent CI', default: 'SPCLEP Blejoi' },
+    { id: 'dataEmiteriiCi', label: 'Data emiterii CI', default: '20.11.2020' },
+    { id: 'email', label: 'Email (opțional)' },
+    { id: 'telefon', label: 'Telefon (opțional)' },
+  ],
+  imobil: [
+    { id: 'adresa', label: 'Adresa completă', full: true, default: 'Str. Butărești nr. 61B, Sat Păulești, Comuna Păulești, județul Prahova' },
+    { id: 'nrCF', label: 'Nr. Carte Funciară', hint: 'de pe extras CF' },
+    { id: 'nrCadastral', label: 'Nr. cadastral', hint: 'de pe extras CF' },
+    { id: 'descriere', label: 'Descriere construcție', full: true, hint: 'ex: casă P+E, 4 camere, 120 mp construit, 500 mp teren' },
+    { id: 'suprafataAlocata', label: 'Suprafață alocată sediu (mp)', default: '12' },
+    { id: 'tipActProprietate', label: 'Tip act proprietate', hint: 'vânzare-cumpărare / certificat moștenitor / titlu proprietate / donație' },
+    { id: 'nrActProprietate', label: 'Nr. act proprietate' },
+    { id: 'dataActProprietate', label: 'Data act proprietate' },
+    { id: 'notarBNP', label: 'BNP / Instituție emitentă (opțional)', full: true, hint: 'ex: BNP Maria Popescu / Comisia Funciară' },
+  ],
+  companie: [
+    { id: 'denumire', label: 'Denumire completă', full: true, default: 'AI REBUILD SOFTWARE S.R.L.' },
+    { id: 'capitalSocial', label: 'Capital social (lei)', default: '500' },
+    { id: 'nrPartiSociale', label: 'Nr. părți sociale', default: '50' },
+    { id: 'valoareParteSociala', label: 'Valoare parte socială (lei)', default: '10' },
+    { id: 'caenPrincipal', label: 'CAEN principal', default: '6201' },
+    { id: 'caenPrincipalDesc', label: 'CAEN principal — descriere', full: true, default: 'Activități de realizare a soft-ului la comandă (software orientat client)' },
+    { id: 'caenSecundare', label: 'CAEN secundare', full: true, default: '6202, 6209, 6311, 6312, 7022, 7320' },
+    { id: 'durata', label: 'Durata societății', default: 'nedeterminată' },
+    { id: 'nrRezervareDenumire', label: 'Nr. rezervare denumire ONRC' },
+    { id: 'dataRezervareDenumire', label: 'Data rezervare denumire' },
+  ],
+  banca: [
+    { id: 'numeBanca', label: 'Bancă', hint: 'BT / ING / BCR / etc.' },
+    { id: 'sucursala', label: 'Sucursala' },
+    { id: 'nrCont', label: 'IBAN cont capital social', full: true },
+    { id: 'dataDepunere', label: 'Data depunere capital' },
+    { id: 'nrFoaieVarsamant', label: 'Nr. foaie de vărsământ' },
+  ],
+  oficial: [
+    { id: 'cui', label: 'CUI', hint: 'după înmatriculare' },
+    { id: 'nrJONRC', label: 'Nr. J ONRC', hint: 'ex: J40/12345/2026' },
+    { id: 'dataInmatriculare', label: 'Data înmatriculării' },
+  ]
+};
+
+// ============================================
+// ROADMAP DEFINITION
+// ============================================
 const ROADMAP = [
   { id: 'p1', title: 'Faza 1 — Pregătire & verificări', meta: 'Zilele 1-2', tasks: [
     { id: 't1_1', label: 'Finalizare rezervare denumire pe portal ONRC (pașii 5-8)' },
@@ -386,7 +473,7 @@ const ROADMAP = [
     { id: 't1_5', label: 'Verificare extras CF: situația sarcinilor (ipotecă)' },
     { id: 't1_6', label: 'Sună soacra pentru tipul actului de proprietate' },
     { id: 't1_7', label: 'Decide capital social (recomandare: 500 lei)' },
-    { id: 't1_8', label: 'Decide coduri CAEN (6201 principal + 6202, 6209, 7022)' },
+    { id: 't1_8', label: 'Decide coduri CAEN (6201 principal + secundare)' },
     { id: 't1_9', label: 'Achiziție semnătură electronică calificată (CertSign)' },
     { id: 't1_10', label: 'Descarcă cazier fiscal din SPV ANAF' },
   ]},
@@ -440,13 +527,22 @@ const ACHIEVEMENTS = [
   { id: 'a_j_onrc', label: 'Nr. J ONRC' },
 ];
 
-const STORAGE_KEY = 'air_rebuild_roadmap_v1';
-const COLLAPSED_KEY = 'air_rebuild_collapsed_v1';
-let state = { checked: {}, achievements: {} };
+// ============================================
+// STATE
+// ============================================
+const STORAGE_KEY = 'air_rebuild_state_v2';
+const COLLAPSED_KEY = 'air_rebuild_collapsed_v2';
+
+let state = {
+  checked: {},
+  achievements: {},
+  data: { asociat: {}, proprietar: {}, imobil: {}, companie: {}, banca: {}, oficial: {} },
+};
 let collapsed = {};
+let currentDoc = null;
 
 function escapeHtml(s) {
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function loadState() {
@@ -456,33 +552,56 @@ function loadState() {
       const parsed = JSON.parse(raw);
       state.checked = parsed.checked || {};
       state.achievements = parsed.achievements || {};
+      state.data = parsed.data || { asociat: {}, proprietar: {}, imobil: {}, companie: {}, banca: {}, oficial: {} };
+      // ensure all sections exist
+      ['asociat','proprietar','imobil','companie','banca','oficial'].forEach(k => {
+        if (!state.data[k]) state.data[k] = {};
+      });
     }
     const col = localStorage.getItem(COLLAPSED_KEY);
     if (col) collapsed = JSON.parse(col);
   } catch (e) {}
+
+  // Apply defaults if fields are empty
+  Object.keys(FIELDS).forEach(section => {
+    FIELDS[section].forEach(f => {
+      if (f.default && (state.data[section][f.id] == null || state.data[section][f.id] === '')) {
+        state.data[section][f.id] = f.default;
+      }
+    });
+  });
 }
 
 function saveState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    const t = new Date().toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' });
-    document.getElementById('last-saved').textContent = 'Salvat ' + t;
   } catch (e) {}
 }
-
 function saveCollapsed() {
   try {
     localStorage.setItem(COLLAPSED_KEY, JSON.stringify(collapsed));
   } catch (e) {}
 }
 
-function calculatePhaseProgress(phase) {
-  const done = phase.tasks.filter(t => state.checked[t.id]).length;
-  const total = phase.tasks.length;
-  return { done, total };
+// ============================================
+// TAB SWITCHING
+// ============================================
+function switchView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelector('.tab[data-view="' + name + '"]').classList.add('active');
+  window.scrollTo({ top: 0 });
 }
 
-function calculateOverallProgress() {
+// ============================================
+// ROADMAP RENDERING
+// ============================================
+function calcPhase(phase) {
+  const done = phase.tasks.filter(t => state.checked[t.id]).length;
+  return { done, total: phase.tasks.length };
+}
+function calcOverall() {
   const all = ROADMAP.flatMap(p => p.tasks);
   const done = all.filter(t => state.checked[t.id]).length;
   return { done, total: all.length, pct: all.length ? Math.round((done / all.length) * 100) : 0 };
@@ -491,14 +610,15 @@ function calculateOverallProgress() {
 function renderAchievements() {
   const grid = document.getElementById('achievements');
   grid.innerHTML = ACHIEVEMENTS.map(a =>
-    '<div class="achievement-item">' +
-      '<label class="achievement-label" for="' + a.id + '">' + a.label + '</label>' +
-      '<input type="text" id="' + a.id + '" class="achievement-input" placeholder="–" value="' + escapeHtml(state.achievements[a.id] || '') + '" />' +
+    '<div class="field">' +
+      '<label for="ach_' + a.id + '">' + a.label + '</label>' +
+      '<input type="text" id="ach_' + a.id + '" placeholder="–" value="' + escapeHtml(state.achievements[a.id] || '') + '" />' +
     '</div>'
   ).join('');
   grid.addEventListener('input', (e) => {
-    if (e.target.classList.contains('achievement-input')) {
-      state.achievements[e.target.id] = e.target.value;
+    if (e.target.id && e.target.id.startsWith('ach_')) {
+      const key = e.target.id.replace('ach_', '');
+      state.achievements[key] = e.target.value;
       saveState();
     }
   });
@@ -507,10 +627,10 @@ function renderAchievements() {
 function renderPhases() {
   const container = document.getElementById('phases');
   container.innerHTML = ROADMAP.map(phase => {
-    const prog = calculatePhaseProgress(phase);
+    const prog = calcPhase(phase);
     const isComplete = prog.done === prog.total;
     const isCollapsed = collapsed[phase.id] === true;
-    const phaseMeta = isComplete
+    const meta = isComplete
       ? '<span class="phase-badge-done"><i class="ti ti-check" style="font-size: 12px;"></i>Gata</span>'
       : prog.done + '/' + prog.total + ' · ' + phase.meta;
     return '<div class="phase ' + (isCollapsed ? 'collapsed' : '') + ' ' + (isComplete ? 'all-done' : '') + '" data-phase="' + phase.id + '">' +
@@ -519,7 +639,7 @@ function renderPhases() {
           '<span class="phase-toggle"><i class="ti ti-chevron-down" style="font-size: 16px;"></i></span>' +
           '<h2 class="phase-title">' + phase.title + '</h2>' +
         '</div>' +
-        '<span class="phase-meta" data-phase-meta="' + phase.id + '">' + phaseMeta + '</span>' +
+        '<span class="phase-meta" data-phase-meta="' + phase.id + '">' + meta + '</span>' +
       '</div>' +
       '<div class="phase-tasks">' +
         phase.tasks.map(t =>
@@ -534,21 +654,19 @@ function renderPhases() {
 
   container.addEventListener('change', (e) => {
     if (e.target.classList.contains('task-checkbox')) {
-      const id = e.target.id;
-      state.checked[id] = e.target.checked;
+      state.checked[e.target.id] = e.target.checked;
       saveState();
       e.target.closest('.task').classList.toggle('done', e.target.checked);
       const phaseId = e.target.dataset.phase;
       const phase = ROADMAP.find(p => p.id === phaseId);
       if (phase) {
-        const prog = calculatePhaseProgress(phase);
+        const prog = calcPhase(phase);
         const isComplete = prog.done === prog.total;
+        const meta = isComplete
+          ? '<span class="phase-badge-done"><i class="ti ti-check" style="font-size: 12px;"></i>Gata</span>'
+          : prog.done + '/' + prog.total + ' · ' + phase.meta;
         const metaEl = document.querySelector('[data-phase-meta="' + phaseId + '"]');
-        if (metaEl) {
-          metaEl.innerHTML = isComplete
-            ? '<span class="phase-badge-done"><i class="ti ti-check" style="font-size: 12px;"></i>Gata</span>'
-            : prog.done + '/' + prog.total + ' · ' + phase.meta;
-        }
+        if (metaEl) metaEl.innerHTML = meta;
         const phaseEl = document.querySelector('[data-phase="' + phaseId + '"]');
         if (phaseEl) phaseEl.classList.toggle('all-done', isComplete);
       }
@@ -569,23 +687,1132 @@ function renderPhases() {
 }
 
 function updateOverall() {
-  const o = calculateOverallProgress();
-  document.getElementById('overall-pct').textContent = o.done + '/' + o.total + ' (' + o.pct + '%)';
+  const o = calcOverall();
   document.getElementById('overall-bar').style.width = o.pct + '%';
+  document.getElementById('header-subtitle').textContent = 'Control Center · ' + o.done + '/' + o.total + ' pași (' + o.pct + '%)';
+  // Update document badges (some docs may now have more/less data)
+  renderDocumentsList();
 }
 
-function resetAll() {
-  if (confirm('Sigur vrei să resetezi tot progresul?')) {
-    state = { checked: {}, achievements: {} };
-    collapsed = {};
-    saveState();
-    saveCollapsed();
-    renderAchievements();
-    renderPhases();
-    updateOverall();
+// ============================================
+// FORM RENDERING
+// ============================================
+function renderForms() {
+  Object.keys(FIELDS).forEach(section => {
+    const container = document.getElementById('form-' + section);
+    if (!container) return;
+    container.innerHTML = FIELDS[section].map(f => {
+      const val = state.data[section][f.id] || '';
+      const useTextarea = f.full && (f.id === 'domiciliu' || f.id === 'adresa' || f.id === 'descriere' || f.id === 'caenSecundare' || f.id === 'caenPrincipalDesc' || f.id === 'notarBNP');
+      const inputHtml = useTextarea
+        ? '<textarea id="fld_' + section + '_' + f.id + '" rows="2">' + escapeHtml(val) + '</textarea>'
+        : '<input type="text" id="fld_' + section + '_' + f.id + '" value="' + escapeHtml(val) + '" />';
+      return '<div class="field ' + (f.full ? 'full' : '') + '">' +
+        '<label for="fld_' + section + '_' + f.id + '">' + f.label + '</label>' +
+        inputHtml +
+        (f.hint ? '<div class="hint">' + f.hint + '</div>' : '') +
+      '</div>';
+    }).join('');
+    container.addEventListener('input', (e) => {
+      const id = e.target.id;
+      if (id && id.startsWith('fld_')) {
+        const parts = id.split('_');
+        const sec = parts[1];
+        const field = parts.slice(2).join('_');
+        if (!state.data[sec]) state.data[sec] = {};
+        state.data[sec][field] = e.target.value;
+        saveState();
+      }
+    });
+  });
+}
+
+// ============================================
+// DOCUMENT TEMPLATES (defined separately in next file)
+// ============================================
+// DOCUMENTS array and templates will be loaded after this script
+</script>
+<script>
+// ============================================
+// DOCUMENT TEMPLATES
+// All documents use getValue() to fill placeholders from state.data
+// renderHtml() returns formatted HTML for preview
+// renderDocx(d) returns a docx.Document object for Word download
+// ============================================
+
+// --- helpers ---
+function ph(text, missing) {
+  // returns HTML span for placeholder if missing
+  if (!text || text === '' || /^\[.*\]$/.test(text)) {
+    return '<span class="placeholder-missing">' + (missing || text || '[...]') + '</span>';
+  }
+  return text;
+}
+
+function v(path, fallback) {
+  return getValue(path, fallback);
+}
+
+function isFilled(path) {
+  const [section, field] = path.split('.');
+  return state.data[section] && state.data[section][field] && String(state.data[section][field]).trim() !== '';
+}
+
+// Helper to build docx paragraphs concisely
+function buildDocxParagraphs(d, content) {
+  const { Paragraph, TextRun, AlignmentType, HeadingLevel } = d;
+  return content.map(item => {
+    if (typeof item === 'string') {
+      if (item === '') return new Paragraph({ children: [new TextRun('')] });
+      return new Paragraph({
+        spacing: { after: 120, line: 300 },
+        alignment: AlignmentType.JUSTIFIED,
+        children: [new TextRun(item)]
+      });
+    }
+    if (item.heading) {
+      return new Paragraph({
+        spacing: { before: 240, after: 120 },
+        alignment: AlignmentType.CENTER,
+        children: [new TextRun({ text: item.heading, bold: true, size: 28 })]
+      });
+    }
+    if (item.subheading) {
+      return new Paragraph({
+        spacing: { before: 200, after: 100 },
+        children: [new TextRun({ text: item.subheading, bold: true, size: 24 })]
+      });
+    }
+    if (item.center) {
+      return new Paragraph({
+        spacing: { after: 120, line: 300 },
+        alignment: AlignmentType.CENTER,
+        children: [new TextRun({ text: item.center, bold: item.bold || false, italics: item.italics || false })]
+      });
+    }
+    if (item.right) {
+      return new Paragraph({
+        spacing: { after: 120, line: 300 },
+        alignment: AlignmentType.RIGHT,
+        children: [new TextRun({ text: item.right, bold: item.bold || false })]
+      });
+    }
+    if (item.mixed) {
+      return new Paragraph({
+        spacing: { after: 120, line: 300 },
+        alignment: AlignmentType.JUSTIFIED,
+        children: item.mixed.map(p => typeof p === 'string' ? new TextRun(p) : new TextRun(p))
+      });
+    }
+    return new Paragraph({ children: [new TextRun('')] });
+  });
+}
+
+function buildDocxDocument(d, paragraphs) {
+  const { Document } = d;
+  return new Document({
+    styles: {
+      default: { document: { run: { font: "Arial", size: 22 } } }
+    },
+    sections: [{
+      properties: {
+        page: {
+          size: { width: 11906, height: 16838 },
+          margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 }
+        }
+      },
+      children: paragraphs
+    }]
+  });
+}
+
+// ============================================
+// HTML helper for rendering
+// ============================================
+function htmlMissing(label) {
+  return '<span class="placeholder-missing">[' + label + ']</span>';
+}
+
+function vh(path, label) {
+  const [section, field] = path.split('.');
+  const val = state.data[section] && state.data[section][field];
+  if (val == null || String(val).trim() === '') return htmlMissing(label || field);
+  return escapeHtml(val);
+}
+
+// ============================================
+// DOCUMENT 1: CONTRACT DE COMODAT
+// ============================================
+const DOC_COMODAT = {
+  id: 'comodat',
+  title: 'Contract de comodat',
+  desc: 'Acord între soacră (proprietar) și tine (comodatar) pentru folosința imobilului ca sediu social.',
+  filename: 'Contract_de_comodat',
+  required: [
+    { path: 'asociat.nume', label: 'nume asociat' },
+    { path: 'asociat.prenume', label: 'prenume asociat' },
+    { path: 'asociat.cnp', label: 'CNP asociat' },
+    { path: 'asociat.serieCi', label: 'serie CI asociat' },
+    { path: 'asociat.nrCi', label: 'nr CI asociat' },
+    { path: 'asociat.domiciliu', label: 'domiciliu asociat' },
+    { path: 'imobil.nrCF', label: 'nr Carte Funciară' },
+    { path: 'imobil.nrCadastral', label: 'nr cadastral' },
+    { path: 'imobil.tipActProprietate', label: 'tip act proprietate' },
+    { path: 'companie.denumire', label: 'denumire companie' },
+  ],
+
+  renderHtml() {
+    const pNume = vh('proprietar.nume') + ' ' + vh('proprietar.prenume');
+    const pDN = vh('proprietar.dataNasterii', 'data nașterii');
+    const pLN = vh('proprietar.loculNasterii', 'locul nașterii');
+    const pDom = vh('proprietar.domiciliu', 'domiciliu');
+    const pCi = vh('proprietar.serieCi', 'serie') + ' nr. ' + vh('proprietar.nrCi', 'nr CI');
+    const pEm = vh('proprietar.emitentCi', 'emitent') + ' la data de ' + vh('proprietar.dataEmiteriiCi', 'data emiterii');
+    const pCnp = vh('proprietar.cnp', 'CNP');
+
+    const aNume = vh('asociat.nume', 'NUME') + ' ' + vh('asociat.prenume', 'PRENUME');
+    const aDN = vh('asociat.dataNasterii', 'data nașterii');
+    const aLN = vh('asociat.loculNasterii', 'locul nașterii');
+    const aDom = vh('asociat.domiciliu', 'domiciliu');
+    const aCi = vh('asociat.serieCi', 'serie') + ' nr. ' + vh('asociat.nrCi', 'nr CI');
+    const aEm = vh('asociat.emitentCi', 'emitent') + ' la data de ' + vh('asociat.dataEmiteriiCi', 'data emiterii');
+    const aCnp = vh('asociat.cnp', 'CNP');
+
+    const adr = vh('imobil.adresa', 'adresa imobilului');
+    const desc = vh('imobil.descriere', 'descriere construcție');
+    const cf = vh('imobil.nrCF', 'nr CF');
+    const cad = vh('imobil.nrCadastral', 'nr cadastral');
+    const supraf = vh('imobil.suprafataAlocata', 'suprafață alocată');
+    const tipAct = vh('imobil.tipActProprietate', 'tip act proprietate');
+    const nrAct = vh('imobil.nrActProprietate', 'nr act');
+    const dataAct = vh('imobil.dataActProprietate', 'data act');
+    const notar = isFilled('imobil.notarBNP') ? ' la ' + escapeHtml(state.data.imobil.notarBNP) : '';
+
+    const den = vh('companie.denumire', 'denumire companie');
+    const rez = vh('companie.nrRezervareDenumire', 'nr rezervare');
+    const dataRez = vh('companie.dataRezervareDenumire', 'data rezervare');
+
+    return `
+      <h1>CONTRACT DE COMODAT</h1>
+      <p style="text-align:center;font-style:italic">Încheiat astăzi, _______________, la _______________</p>
+
+      <h2>I. PĂRȚILE CONTRACTANTE</h2>
+      <p><b>1.1. COMODANT:</b> Doamna <b>${pNume}</b>, cetățean român, născută la data de ${pDN} în ${pLN}, domiciliată în ${pDom}, identificată cu CI seria ${pCi}, eliberată de ${pEm}, având CNP ${pCnp}, în calitate de proprietară a imobilului ce face obiectul prezentului contract, denumită în continuare <b>"Comodantul"</b>,</p>
+      <p style="text-align:center;font-style:italic">și</p>
+      <p><b>1.2. COMODATAR:</b> Domnul <b>${aNume}</b>, cetățean român, născut la data de ${aDN} în ${aLN}, domiciliat în ${aDom}, identificat cu CI seria ${aCi}, eliberată de ${aEm}, având CNP ${aCnp}, în calitate de viitor asociat unic al societății ${den} (în curs de constituire), denumit în continuare <b>"Comodatarul"</b>,</p>
+      <p>au convenit încheierea prezentului contract de comodat, în conformitate cu prevederile art. 2.146 – 2.157 din Codul Civil, în următoarele condiții:</p>
+
+      <h2>II. OBIECTUL CONTRACTULUI</h2>
+      <p>2.1. Comodantul transmite cu titlu gratuit Comodatarului dreptul de folosință asupra imobilului situat în ${adr}, compus din ${desc}, înscris în Cartea Funciară nr. ${cf} a localității Păulești, având nr. cadastral ${cad}.</p>
+      <p>2.2. Imobilul este proprietatea exclusivă a Comodantului în baza ${tipAct} nr. ${nrAct} din data de ${dataAct}${notar}.</p>
+      <p>2.3. Din imobilul descris la art. 2.1, Comodantul transmite Comodatarului folosința unei suprafețe de <b>${supraf} mp</b>, destinată exclusiv stabilirii sediului social al societății <b>${den}</b>, persoană juridică română în curs de constituire, având rezervarea de denumire nr. ${rez} din data de ${dataRez}.</p>
+
+      <h2>III. DURATA CONTRACTULUI</h2>
+      <p>3.1. Prezentul contract se încheie pe o durată de <b>10 (zece) ani</b>, începând cu data semnării, cu posibilitatea prelungirii prin acordul scris al părților.</p>
+      <p>3.2. Contractul poate fi denunțat unilateral de oricare dintre părți, cu un preaviz scris de 30 (treizeci) de zile.</p>
+
+      <h2>IV. DESTINAȚIA SPAȚIULUI</h2>
+      <p>4.1. Spațiul predat în folosință va fi utilizat de Comodatar exclusiv pentru stabilirea sediului social al societății ${den}, conform prevederilor Legii nr. 31/1990 privind societățile, republicată.</p>
+      <p>4.2. Comodantul își exprimă în mod expres acordul ca la adresa imobilului mai sus menționat să fie înregistrat sediul social al societății ${den} la Oficiul Național al Registrului Comerțului — Oficiul Registrului Comerțului de pe lângă Tribunalul Prahova.</p>
+      <p>4.3. Comodatarul nu va desfășura efectiv la sediul social activități economice care să producă zgomot, fum, mirosuri sau alte forme de poluare.</p>
+
+      <h2>V. OBLIGAȚIILE COMODANTULUI</h2>
+      <p>5.1. Să predea Comodatarului folosința spațiului la data semnării.</p>
+      <p>5.2. Să garanteze Comodatarul împotriva oricăror tulburări sau pretenții ale terților.</p>
+      <p>5.3. Să își mențină acordul pentru înregistrarea sediului social pe toată durata contractului.</p>
+
+      <h2>VI. OBLIGAȚIILE COMODATARULUI</h2>
+      <p>6.1. Să folosească spațiul exclusiv conform destinației stabilite — sediu social.</p>
+      <p>6.2. Să suporte, dacă este cazul, cheltuielile aferente folosinței efective.</p>
+      <p>6.3. Să restituie spațiul în starea în care l-a primit, la încetarea contractului.</p>
+      <p>6.4. Să nu sublocheze sau cedeze folosința unor terți fără acordul scris al Comodantului.</p>
+
+      <h2>VII. CARACTERUL GRATUIT</h2>
+      <p>7.1. Prezentul contract este încheiat cu <b>titlu gratuit</b>, conform art. 2.146 din Codul Civil. Comodatarul nu datorează Comodantului nicio sumă cu titlu de chirie pentru folosința spațiului.</p>
+
+      <h2>VIII. ÎNCETAREA CONTRACTULUI</h2>
+      <p>8.1. Prezentul contract încetează: la expirarea duratei; prin acord scris al părților; prin denunțare unilaterală cu preaviz; prin reziliere de plin drept; prin radierea societății ${den} de la Registrul Comerțului.</p>
+
+      <h2>IX. CLAUZE FINALE</h2>
+      <p>9.1. Prezentul contract reprezintă acordul integral al părților.</p>
+      <p>9.2. Modificările se fac prin act adițional scris, semnat de ambele părți.</p>
+      <p>9.3. Litigiile se soluționează amiabil sau, în caz contrar, de instanțele judecătorești de la locul situării imobilului.</p>
+      <p style="font-style:italic">Prezentul contract a fost încheiat astăzi, _______________, în 3 (trei) exemplare originale, câte unul pentru fiecare parte și unul pentru ONRC.</p>
+
+      <div class="signatures" style="display:flex;justify-content:space-between;margin-top:3em">
+        <div><b>COMODANT,</b><br>${pNume}<br><br>Semnătură: __________________</div>
+        <div><b>COMODATAR,</b><br>${aNume}<br><br>Semnătură: __________________</div>
+      </div>
+    `;
+  },
+
+  renderDocx(d) {
+    const pNume = v('proprietar.nume') + ' ' + v('proprietar.prenume');
+    const aNume = v('asociat.nume') + ' ' + v('asociat.prenume');
+    const den = v('companie.denumire');
+    const notar = isFilled('imobil.notarBNP') ? ' la ' + state.data.imobil.notarBNP : '';
+
+    const content = [
+      { heading: 'CONTRACT DE COMODAT' },
+      { center: 'Încheiat astăzi, _______________, la _______________', italics: true },
+      '',
+      { subheading: 'I. PĂRȚILE CONTRACTANTE' },
+      { mixed: [
+        { text: '1.1. COMODANT: ', bold: true },
+        `Doamna ${pNume}, cetățean român, născută la data de ${v('proprietar.dataNasterii')} în ${v('proprietar.loculNasterii')}, domiciliată în ${v('proprietar.domiciliu')}, identificată cu CI seria ${v('proprietar.serieCi')} nr. ${v('proprietar.nrCi')}, eliberată de ${v('proprietar.emitentCi')} la data de ${v('proprietar.dataEmiteriiCi')}, având CNP ${v('proprietar.cnp')}, în calitate de proprietară a imobilului ce face obiectul prezentului contract, denumită în continuare `,
+        { text: '"Comodantul"', bold: true },
+        ','
+      ]},
+      { center: 'și', italics: true },
+      { mixed: [
+        { text: '1.2. COMODATAR: ', bold: true },
+        `Domnul ${aNume}, cetățean român, născut la data de ${v('asociat.dataNasterii')} în ${v('asociat.loculNasterii')}, domiciliat în ${v('asociat.domiciliu')}, identificat cu CI seria ${v('asociat.serieCi')} nr. ${v('asociat.nrCi')}, eliberată de ${v('asociat.emitentCi')} la data de ${v('asociat.dataEmiteriiCi')}, având CNP ${v('asociat.cnp')}, în calitate de viitor asociat unic al societății ${den} (în curs de constituire), denumit în continuare `,
+        { text: '"Comodatarul"', bold: true },
+        ','
+      ]},
+      'au convenit încheierea prezentului contract de comodat, în conformitate cu prevederile art. 2.146 – 2.157 din Codul Civil, în următoarele condiții:',
+      { subheading: 'II. OBIECTUL CONTRACTULUI' },
+      `2.1. Comodantul transmite cu titlu gratuit Comodatarului dreptul de folosință asupra imobilului situat în ${v('imobil.adresa')}, compus din ${v('imobil.descriere')}, înscris în Cartea Funciară nr. ${v('imobil.nrCF')} a localității Păulești, având nr. cadastral ${v('imobil.nrCadastral')}.`,
+      `2.2. Imobilul este proprietatea exclusivă a Comodantului în baza ${v('imobil.tipActProprietate')} nr. ${v('imobil.nrActProprietate')} din data de ${v('imobil.dataActProprietate')}${notar}.`,
+      { mixed: [
+        `2.3. Din imobilul descris la art. 2.1, Comodantul transmite Comodatarului folosința unei suprafețe de `,
+        { text: `${v('imobil.suprafataAlocata')} mp`, bold: true },
+        `, destinată exclusiv stabilirii sediului social al societății `,
+        { text: den, bold: true },
+        `, persoană juridică română în curs de constituire, având rezervarea de denumire nr. ${v('companie.nrRezervareDenumire')} din data de ${v('companie.dataRezervareDenumire')}.`
+      ]},
+      { subheading: 'III. DURATA CONTRACTULUI' },
+      { mixed: [
+        `3.1. Prezentul contract se încheie pe o durată de `,
+        { text: '10 (zece) ani', bold: true },
+        `, începând cu data semnării, cu posibilitatea prelungirii prin acordul scris al părților, exprimat prin act adițional.`
+      ]},
+      '3.2. Contractul poate fi denunțat unilateral de oricare dintre părți, cu un preaviz scris de 30 (treizeci) de zile.',
+      { subheading: 'IV. DESTINAȚIA SPAȚIULUI' },
+      { mixed: [
+        `4.1. Spațiul predat în folosință va fi utilizat de Comodatar exclusiv pentru stabilirea `,
+        { text: 'sediului social', bold: true },
+        ` al societății ${den}, conform prevederilor Legii nr. 31/1990 privind societățile, republicată, cu modificările și completările ulterioare.`
+      ]},
+      { mixed: [
+        `4.2. Comodantul își exprimă în mod `,
+        { text: 'expres acordul', bold: true },
+        ` ca la adresa imobilului mai sus menționat să fie înregistrat sediul social al societății ${den} la Oficiul Național al Registrului Comerțului — Oficiul Registrului Comerțului de pe lângă Tribunalul Prahova.`
+      ]},
+      `4.3. Comodatarul nu va desfășura efectiv la sediul social activități economice care să producă zgomot, fum, mirosuri sau alte forme de poluare care ar putea afecta vecinii sau destinația de locuință a imobilului.`,
+      { subheading: 'V. OBLIGAȚIILE COMODANTULUI' },
+      '5.1. Să predea Comodatarului folosința spațiului la data semnării prezentului contract.',
+      '5.2. Să garanteze pe Comodatar împotriva oricăror tulburări sau pretenții ale terților asupra imobilului.',
+      `5.3. Să își mențină acordul pentru înregistrarea sediului social al societății ${den} la adresa imobilului, pe toată durata prezentului contract.`,
+      '5.4. Să suporte taxele și impozitele aferente dreptului de proprietate asupra imobilului.',
+      { subheading: 'VI. OBLIGAȚIILE COMODATARULUI' },
+      '6.1. Să folosească spațiul exclusiv conform destinației stabilite la art. 4.1 — sediu social.',
+      '6.2. Să suporte, dacă este cazul, cheltuielile aferente folosinței efective a spațiului.',
+      '6.3. Să restituie spațiul în starea în care l-a primit, la încetarea contractului.',
+      '6.4. Să nu sublocheze, să nu cedeze și să nu transmită folosința spațiului unor terți fără acordul scris prealabil al Comodantului.',
+      `6.5. Să notifice Comodantul despre înregistrarea sediului social și să comunice numărul de înmatriculare și codul unic de înregistrare al societății, după constituire.`,
+      { subheading: 'VII. CARACTERUL GRATUIT' },
+      { mixed: [
+        `7.1. Prezentul contract este încheiat cu `,
+        { text: 'titlu gratuit', bold: true },
+        `, conform art. 2.146 din Codul Civil. Comodatarul nu datorează Comodantului nicio sumă cu titlu de chirie, redevență sau alte plăți pentru folosința spațiului.`
+      ]},
+      { subheading: 'VIII. ÎNCETAREA CONTRACTULUI' },
+      '8.1. Prezentul contract încetează în următoarele situații: (a) la expirarea duratei prevăzute la art. 3.1; (b) prin acordul scris al părților; (c) prin denunțare unilaterală cu preaviz de 30 de zile; (d) prin reziliere de plin drept, în caz de nerespectare a obligațiilor esențiale; (e) prin radierea societății ' + den + ' de la Registrul Comerțului.',
+      { subheading: 'IX. CLAUZE FINALE' },
+      '9.1. Prezentul contract reprezintă acordul integral al părților cu privire la obiectul său.',
+      '9.2. Modificările prezentului contract se fac exclusiv prin act adițional scris, semnat de ambele părți.',
+      '9.3. Eventualele litigii se soluționează pe cale amiabilă; în caz contrar, sunt de competența instanțelor judecătorești de la locul situării imobilului.',
+      '',
+      `Prezentul contract a fost încheiat astăzi, _______________, în 3 (trei) exemplare originale, câte unul pentru fiecare parte și unul pentru ONRC.`,
+      '',
+      '',
+      { mixed: [
+        { text: 'COMODANT,                                                            COMODATAR,', bold: true }
+      ]},
+      `${pNume}                                                                ${aNume}`,
+      '',
+      'Semnătură: _______________                          Semnătură: _______________',
+    ];
+
+    return buildDocxDocument(d, buildDocxParagraphs(d, content));
+  }
+};
+
+// ============================================
+// DOCUMENT 2: DECLARAȚIE PROPRIETAR
+// ============================================
+const DOC_DECLARATIE = {
+  id: 'declaratie',
+  title: 'Declarație proprietar',
+  desc: 'Declarația soacrei că imobilul nu e sediu pentru altă firmă + acord pentru sediul AI REBUILD.',
+  filename: 'Declaratie_proprietar',
+  required: [
+    { path: 'proprietar.nume', label: 'nume proprietar' },
+    { path: 'asociat.nume', label: 'nume asociat' },
+    { path: 'imobil.nrCF', label: 'nr CF' },
+    { path: 'imobil.tipActProprietate', label: 'tip act proprietate' },
+    { path: 'companie.denumire', label: 'denumire companie' },
+  ],
+
+  renderHtml() {
+    const pNume = vh('proprietar.nume') + ' ' + vh('proprietar.prenume');
+    const aNume = vh('asociat.nume', 'NUME asociat') + ' ' + vh('asociat.prenume', 'PRENUME asociat');
+    const adr = vh('imobil.adresa');
+    const den = vh('companie.denumire');
+    const tipAct = vh('imobil.tipActProprietate');
+    const nrAct = vh('imobil.nrActProprietate', 'nr act');
+    const dataAct = vh('imobil.dataActProprietate', 'data act');
+
+    return `
+      <h1>DECLARAȚIE PE PROPRIA RĂSPUNDERE</h1>
+      <p style="text-align:center;font-style:italic">(privind imobilul utilizat pentru stabilirea sediului social)</p>
+
+      <p>Subsemnata, <b>${pNume}</b>, cetățean român, născută la data de ${vh('proprietar.dataNasterii')} în ${vh('proprietar.loculNasterii')}, domiciliată în ${vh('proprietar.domiciliu')}, identificată cu CI seria ${vh('proprietar.serieCi')} nr. ${vh('proprietar.nrCi')}, eliberată de ${vh('proprietar.emitentCi')} la data de ${vh('proprietar.dataEmiteriiCi')}, având CNP <b>${vh('proprietar.cnp')}</b>, în calitate de <b>proprietar</b> al imobilului situat în <b>${adr}</b>, înscris în Cartea Funciară nr. ${vh('imobil.nrCF')} a localității Păulești, având nr. cadastral ${vh('imobil.nrCadastral')},</p>
+
+      <p style="font-style:italic">cunoscând prevederile art. 326 din Codul Penal privind falsul în declarații,</p>
+
+      <p style="text-align:center"><b>DECLAR PE PROPRIA RĂSPUNDERE URMĂTOARELE:</b></p>
+
+      <p><b>1.</b> Sunt proprietara exclusivă a imobilului mai sus identificat, în baza ${tipAct} nr. ${nrAct} din data de ${dataAct}.</p>
+
+      <p><b>2.</b> La data prezentei declarații, la adresa imobilului mai sus menționat <b>nu este înregistrat sediul social al niciunei alte societăți comerciale</b>.</p>
+
+      <p><b>3.</b> Îmi exprim în mod <b>expres acordul</b> pentru înregistrarea sediului social al societății <b>${den}</b> (în curs de constituire, având rezervarea de denumire nr. ${vh('companie.nrRezervareDenumire')} din data de ${vh('companie.dataRezervareDenumire')}) la adresa imobilului proprietatea mea, pe toată durata contractului de comodat încheiat cu domnul ${aNume} în calitate de comodatar și viitor asociat unic al societății.</p>
+
+      <p><b>4.</b> Mă oblig să comunic în scris Oficiului Național al Registrului Comerțului orice modificare survenită cu privire la cele declarate prin prezentul, în termen de 15 zile de la producerea acesteia.</p>
+
+      <p><b>5.</b> Înțeleg că datele declarate sunt date sub sancțiunea legii penale și sunt răspunzătoare pentru exactitatea și veridicitatea acestora.</p>
+
+      <p>Dată în Păulești, jud. Prahova, astăzi _______________.</p>
+
+      <div style="text-align:right;margin-top:3em">
+        <p><b>PROPRIETAR,</b></p>
+        <p>${pNume}</p>
+        <p>Semnătură: _______________________</p>
+      </div>
+    `;
+  },
+
+  renderDocx(d) {
+    const pNume = v('proprietar.nume') + ' ' + v('proprietar.prenume');
+    const aNume = v('asociat.nume') + ' ' + v('asociat.prenume');
+    const den = v('companie.denumire');
+
+    const content = [
+      { heading: 'DECLARAȚIE PE PROPRIA RĂSPUNDERE' },
+      { center: '(privind imobilul utilizat pentru stabilirea sediului social)', italics: true },
+      '',
+      { mixed: [
+        'Subsemnata, ',
+        { text: pNume, bold: true },
+        `, cetățean român, născută la data de ${v('proprietar.dataNasterii')} în ${v('proprietar.loculNasterii')}, domiciliată în ${v('proprietar.domiciliu')}, identificată cu CI seria ${v('proprietar.serieCi')} nr. ${v('proprietar.nrCi')}, eliberată de ${v('proprietar.emitentCi')} la data de ${v('proprietar.dataEmiteriiCi')}, având CNP `,
+        { text: v('proprietar.cnp'), bold: true },
+        `, în calitate de `,
+        { text: 'proprietar', bold: true },
+        ` al imobilului situat în `,
+        { text: v('imobil.adresa'), bold: true },
+        `, înscris în Cartea Funciară nr. ${v('imobil.nrCF')} a localității Păulești, având nr. cadastral ${v('imobil.nrCadastral')},`
+      ]},
+      { center: 'cunoscând prevederile art. 326 din Codul Penal privind falsul în declarații,', italics: true },
+      '',
+      { center: 'DECLAR PE PROPRIA RĂSPUNDERE URMĂTOARELE:', bold: true },
+      '',
+      { mixed: [
+        { text: '1. ', bold: true },
+        `Sunt proprietara exclusivă a imobilului mai sus identificat, în baza ${v('imobil.tipActProprietate')} nr. ${v('imobil.nrActProprietate')} din data de ${v('imobil.dataActProprietate')}.`
+      ]},
+      { mixed: [
+        { text: '2. ', bold: true },
+        `La data prezentei declarații, la adresa imobilului mai sus menționat `,
+        { text: 'nu este înregistrat sediul social al niciunei alte societăți comerciale', bold: true },
+        '.'
+      ]},
+      { mixed: [
+        { text: '3. ', bold: true },
+        `Îmi exprim în mod `,
+        { text: 'expres acordul', bold: true },
+        ` pentru înregistrarea sediului social al societății `,
+        { text: den, bold: true },
+        ` (în curs de constituire, având rezervarea de denumire nr. ${v('companie.nrRezervareDenumire')} din data de ${v('companie.dataRezervareDenumire')}) la adresa imobilului proprietatea mea, pe toată durata contractului de comodat încheiat cu domnul ${aNume} în calitate de comodatar și viitor asociat unic al societății.`
+      ]},
+      { mixed: [
+        { text: '4. ', bold: true },
+        `Mă oblig să comunic în scris Oficiului Național al Registrului Comerțului orice modificare survenită cu privire la cele declarate prin prezentul, în termen de 15 zile de la producerea acesteia.`
+      ]},
+      { mixed: [
+        { text: '5. ', bold: true },
+        `Înțeleg că datele declarate sunt date sub sancțiunea legii penale și sunt răspunzătoare pentru exactitatea și veridicitatea acestora.`
+      ]},
+      '',
+      'Dată în Păulești, jud. Prahova, astăzi _______________.',
+      '',
+      '',
+      { right: 'PROPRIETAR,', bold: true },
+      { right: pNume },
+      { right: 'Semnătură: _______________________' },
+    ];
+
+    return buildDocxDocument(d, buildDocxParagraphs(d, content));
+  }
+};
+
+// ============================================
+// DOCUMENT 3: HOTĂRÂRE ASOCIAT UNIC
+// ============================================
+const DOC_HOTARARE = {
+  id: 'hotarare',
+  title: 'Hotărâre asociat unic',
+  desc: 'Decizia ta de a numi administrator și de a adopta actul constitutiv.',
+  filename: 'Hotarare_asociat_unic',
+  required: [
+    { path: 'asociat.nume', label: 'nume asociat' },
+    { path: 'asociat.cnp', label: 'CNP asociat' },
+    { path: 'companie.denumire', label: 'denumire companie' },
+    { path: 'imobil.adresa', label: 'adresa sediu' },
+  ],
+
+  renderHtml() {
+    const aNume = vh('asociat.nume') + ' ' + vh('asociat.prenume');
+    const den = vh('companie.denumire');
+
+    return `
+      <h1>HOTĂRÂREA ASOCIATULUI UNIC<br>NR. 1 / ___________</h1>
+      <p style="text-align:center"><b>a societății ${den}</b><br><i>(în curs de constituire)</i></p>
+
+      <p>Subsemnatul, <b>${aNume}</b>, cetățean român, identificat cu CI seria ${vh('asociat.serieCi')} nr. ${vh('asociat.nrCi')}, având CNP <b>${vh('asociat.cnp')}</b>, domiciliat în ${vh('asociat.domiciliu')}, în calitate de <b>asociat unic</b> al societății ${den}, în curs de constituire,</p>
+
+      <p>în baza Legii nr. 31/1990 privind societățile, republicată, cu modificările și completările ulterioare,</p>
+
+      <p style="text-align:center"><b>HOTĂRĂSC:</b></p>
+
+      <p><b>Art. 1.</b> Se aprobă constituirea societății cu răspundere limitată cu asociat unic, sub denumirea <b>${den}</b>, având sediul social în <b>${vh('imobil.adresa')}</b>.</p>
+
+      <p><b>Art. 2.</b> Se aprobă Actul Constitutiv al societății în forma și conținutul anexate la prezenta hotărâre.</p>
+
+      <p><b>Art. 3.</b> Capitalul social al societății este de <b>${vh('companie.capitalSocial')} lei</b>, divizat în <b>${vh('companie.nrPartiSociale')} părți sociale</b> a câte <b>${vh('companie.valoareParteSociala')} lei</b> fiecare, subscris și vărsat integral de asociatul unic.</p>
+
+      <p><b>Art. 4.</b> Se numește în calitate de <b>administrator unic</b> al societății, pe perioadă nedeterminată, cu puteri depline de reprezentare, subsemnatul <b>${aNume}</b>, CNP <b>${vh('asociat.cnp')}</b>.</p>
+
+      <p><b>Art. 5.</b> Administratorul va îndeplini toate formalitățile necesare în vederea înmatriculării societății la Oficiul Național al Registrului Comerțului — ORC Prahova, fiind împuternicit să semneze toate actele și să facă toate demersurile necesare.</p>
+
+      <p><b>Art. 6.</b> Activitatea principală a societății va fi cea corespunzătoare codului CAEN <b>${vh('companie.caenPrincipal')}</b> — ${vh('companie.caenPrincipalDesc')}.</p>
+
+      <p>Prezenta hotărâre a fost adoptată astăzi, _______________, în 2 (două) exemplare originale.</p>
+
+      <div style="text-align:right;margin-top:3em">
+        <p><b>ASOCIAT UNIC,</b></p>
+        <p>${aNume}</p>
+        <p>Semnătură: _______________________</p>
+      </div>
+    `;
+  },
+
+  renderDocx(d) {
+    const aNume = v('asociat.nume') + ' ' + v('asociat.prenume');
+    const den = v('companie.denumire');
+
+    const content = [
+      { heading: 'HOTĂRÂREA ASOCIATULUI UNIC' },
+      { center: 'NR. 1 / ___________', bold: true },
+      { center: `a societății ${den}`, bold: true },
+      { center: '(în curs de constituire)', italics: true },
+      '',
+      { mixed: [
+        'Subsemnatul, ',
+        { text: aNume, bold: true },
+        `, cetățean român, identificat cu CI seria ${v('asociat.serieCi')} nr. ${v('asociat.nrCi')}, având CNP `,
+        { text: v('asociat.cnp'), bold: true },
+        `, domiciliat în ${v('asociat.domiciliu')}, în calitate de `,
+        { text: 'asociat unic', bold: true },
+        ` al societății ${den}, în curs de constituire,`
+      ]},
+      'în baza Legii nr. 31/1990 privind societățile, republicată, cu modificările și completările ulterioare,',
+      { center: 'HOTĂRĂSC:', bold: true },
+      { mixed: [
+        { text: 'Art. 1. ', bold: true },
+        `Se aprobă constituirea societății cu răspundere limitată cu asociat unic, sub denumirea `,
+        { text: den, bold: true },
+        `, având sediul social în `,
+        { text: v('imobil.adresa'), bold: true },
+        '.'
+      ]},
+      { mixed: [
+        { text: 'Art. 2. ', bold: true },
+        'Se aprobă Actul Constitutiv al societății în forma și conținutul anexate la prezenta hotărâre.'
+      ]},
+      { mixed: [
+        { text: 'Art. 3. ', bold: true },
+        `Capitalul social al societății este de `,
+        { text: `${v('companie.capitalSocial')} lei`, bold: true },
+        `, divizat în `,
+        { text: `${v('companie.nrPartiSociale')} părți sociale`, bold: true },
+        ` a câte `,
+        { text: `${v('companie.valoareParteSociala')} lei`, bold: true },
+        ` fiecare, subscris și vărsat integral de asociatul unic.`
+      ]},
+      { mixed: [
+        { text: 'Art. 4. ', bold: true },
+        `Se numește în calitate de `,
+        { text: 'administrator unic', bold: true },
+        ` al societății, pe perioadă nedeterminată, cu puteri depline de reprezentare, subsemnatul `,
+        { text: aNume, bold: true },
+        `, CNP `,
+        { text: v('asociat.cnp'), bold: true },
+        '.'
+      ]},
+      { mixed: [
+        { text: 'Art. 5. ', bold: true },
+        'Administratorul va îndeplini toate formalitățile necesare în vederea înmatriculării societății la Oficiul Național al Registrului Comerțului — ORC Prahova, fiind împuternicit să semneze toate actele și să facă toate demersurile necesare.'
+      ]},
+      { mixed: [
+        { text: 'Art. 6. ', bold: true },
+        `Activitatea principală a societății va fi cea corespunzătoare codului CAEN `,
+        { text: v('companie.caenPrincipal'), bold: true },
+        ` — ${v('companie.caenPrincipalDesc')}.`
+      ]},
+      '',
+      'Prezenta hotărâre a fost adoptată astăzi, _______________, în 2 (două) exemplare originale.',
+      '',
+      '',
+      { right: 'ASOCIAT UNIC,', bold: true },
+      { right: aNume },
+      { right: 'Semnătură: _______________________' },
+    ];
+
+    return buildDocxDocument(d, buildDocxParagraphs(d, content));
+  }
+};
+
+// ============================================
+// DOCUMENT 4: DECLARAȚIE BENEFICIAR REAL
+// ============================================
+const DOC_BENEFICIAR = {
+  id: 'beneficiar',
+  title: 'Declarație beneficiar real',
+  desc: 'Declarația obligatorie ONRC privind beneficiarul real al societății (tu, ca asociat unic 100%).',
+  filename: 'Declaratie_beneficiar_real',
+  required: [
+    { path: 'asociat.nume', label: 'nume asociat' },
+    { path: 'asociat.cnp', label: 'CNP asociat' },
+    { path: 'companie.denumire', label: 'denumire companie' },
+  ],
+
+  renderHtml() {
+    const aNume = vh('asociat.nume') + ' ' + vh('asociat.prenume');
+    const den = vh('companie.denumire');
+
+    return `
+      <h1>DECLARAȚIE PRIVIND BENEFICIARUL REAL</h1>
+      <p style="text-align:center;font-style:italic">conform Legii nr. 129/2019 privind prevenirea și combaterea spălării banilor</p>
+
+      <p>Subsemnatul, <b>${aNume}</b>, cetățean român, identificat cu CI seria ${vh('asociat.serieCi')} nr. ${vh('asociat.nrCi')}, având CNP <b>${vh('asociat.cnp')}</b>, domiciliat în ${vh('asociat.domiciliu')}, în calitate de <b>asociat unic și administrator</b> al societății <b>${den}</b>, în curs de constituire,</p>
+
+      <p style="font-style:italic">cunoscând prevederile art. 326 din Codul Penal privind falsul în declarații și ale Legii nr. 129/2019,</p>
+
+      <p style="text-align:center"><b>DECLAR PE PROPRIA RĂSPUNDERE:</b></p>
+
+      <p><b>1.</b> Beneficiarul real al societății <b>${den}</b> este subsemnatul, în calitate de asociat unic, deținând <b>100% din părțile sociale și drepturile de vot</b>.</p>
+
+      <p><b>2. Date de identificare ale beneficiarului real:</b></p>
+      <ul style="list-style:none;padding-left:1em">
+        <li>• Nume și prenume: <b>${aNume}</b></li>
+        <li>• Data și locul nașterii: ${vh('asociat.dataNasterii')}, ${vh('asociat.loculNasterii')}</li>
+        <li>• Cetățenia: ${vh('asociat.cetatenia', 'cetățenia')}</li>
+        <li>• CNP: <b>${vh('asociat.cnp')}</b></li>
+        <li>• Serie și nr. CI: ${vh('asociat.serieCi')} ${vh('asociat.nrCi')}</li>
+        <li>• Domiciliu: ${vh('asociat.domiciliu')}</li>
+        <li>• Țara de rezidență: România</li>
+      </ul>
+
+      <p><b>3. Natura relației beneficiarului real cu societatea:</b> Asociat unic, deținând 100% din capitalul social și exercitând controlul direct asupra societății prin calitatea de administrator unic.</p>
+
+      <p><b>4.</b> Mă oblig să comunic în scris Oficiului Național al Registrului Comerțului orice modificare survenită cu privire la cele declarate, în termen de 15 zile de la producerea acesteia.</p>
+
+      <p>Dată în _______________, astăzi _______________.</p>
+
+      <div style="text-align:right;margin-top:3em">
+        <p><b>DECLARANT,</b></p>
+        <p>${aNume}</p>
+        <p>Semnătură: _______________________</p>
+      </div>
+    `;
+  },
+
+  renderDocx(d) {
+    const aNume = v('asociat.nume') + ' ' + v('asociat.prenume');
+    const den = v('companie.denumire');
+
+    const content = [
+      { heading: 'DECLARAȚIE PRIVIND BENEFICIARUL REAL' },
+      { center: 'conform Legii nr. 129/2019 privind prevenirea și combaterea spălării banilor', italics: true },
+      '',
+      { mixed: [
+        'Subsemnatul, ',
+        { text: aNume, bold: true },
+        `, cetățean român, identificat cu CI seria ${v('asociat.serieCi')} nr. ${v('asociat.nrCi')}, având CNP `,
+        { text: v('asociat.cnp'), bold: true },
+        `, domiciliat în ${v('asociat.domiciliu')}, în calitate de `,
+        { text: 'asociat unic și administrator', bold: true },
+        ` al societății `,
+        { text: den, bold: true },
+        `, în curs de constituire,`
+      ]},
+      { center: 'cunoscând prevederile art. 326 din Codul Penal privind falsul în declarații și ale Legii nr. 129/2019,', italics: true },
+      '',
+      { center: 'DECLAR PE PROPRIA RĂSPUNDERE:', bold: true },
+      '',
+      { mixed: [
+        { text: '1. ', bold: true },
+        `Beneficiarul real al societății `,
+        { text: den, bold: true },
+        ` este subsemnatul, în calitate de asociat unic, deținând `,
+        { text: '100% din părțile sociale și drepturile de vot', bold: true },
+        '.'
+      ]},
+      { mixed: [
+        { text: '2. ', bold: true },
+        { text: 'Date de identificare ale beneficiarului real:', bold: true }
+      ]},
+      `• Nume și prenume: ${aNume}`,
+      `• Data și locul nașterii: ${v('asociat.dataNasterii')}, ${v('asociat.loculNasterii')}`,
+      `• Cetățenia: ${v('asociat.cetatenia')}`,
+      `• CNP: ${v('asociat.cnp')}`,
+      `• Serie și nr. CI: ${v('asociat.serieCi')} ${v('asociat.nrCi')}`,
+      `• Domiciliu: ${v('asociat.domiciliu')}`,
+      `• Țara de rezidență: România`,
+      { mixed: [
+        { text: '3. Natura relației beneficiarului real cu societatea: ', bold: true },
+        'Asociat unic, deținând 100% din capitalul social și exercitând controlul direct asupra societății prin calitatea de administrator unic.'
+      ]},
+      { mixed: [
+        { text: '4. ', bold: true },
+        `Mă oblig să comunic în scris Oficiului Național al Registrului Comerțului orice modificare survenită cu privire la cele declarate, în termen de 15 zile de la producerea acesteia.`
+      ]},
+      '',
+      'Dată în _______________, astăzi _______________.',
+      '',
+      '',
+      { right: 'DECLARANT,', bold: true },
+      { right: aNume },
+      { right: 'Semnătură: _______________________' },
+    ];
+
+    return buildDocxDocument(d, buildDocxParagraphs(d, content));
+  }
+};
+
+// ============================================
+// DOCUMENT 5: DECLARAȚIE ASOCIAT (propria răspundere)
+// ============================================
+const DOC_DECL_ASOCIAT = {
+  id: 'decl_asociat',
+  title: 'Declarație pe propria răspundere asociat',
+  desc: 'Declarația ta că îndeplinești condițiile legale să fii asociat și administrator.',
+  filename: 'Declaratie_asociat',
+  required: [
+    { path: 'asociat.nume', label: 'nume asociat' },
+    { path: 'asociat.cnp', label: 'CNP asociat' },
+    { path: 'companie.denumire', label: 'denumire companie' },
+  ],
+
+  renderHtml() {
+    const aNume = vh('asociat.nume') + ' ' + vh('asociat.prenume');
+    const den = vh('companie.denumire');
+
+    return `
+      <h1>DECLARAȚIE PE PROPRIA RĂSPUNDERE</h1>
+      <p style="text-align:center;font-style:italic">(asociat unic și administrator)</p>
+
+      <p>Subsemnatul, <b>${aNume}</b>, cetățean român, născut la data de ${vh('asociat.dataNasterii')} în ${vh('asociat.loculNasterii')}, domiciliat în ${vh('asociat.domiciliu')}, identificat cu CI seria ${vh('asociat.serieCi')} nr. ${vh('asociat.nrCi')}, având CNP <b>${vh('asociat.cnp')}</b>, în calitate de viitor <b>asociat unic și administrator</b> al societății <b>${den}</b>, în curs de constituire,</p>
+
+      <p style="font-style:italic">cunoscând prevederile art. 326 din Codul Penal privind falsul în declarații,</p>
+
+      <p style="text-align:center"><b>DECLAR PE PROPRIA RĂSPUNDERE:</b></p>
+
+      <p><b>1.</b> Îndeplinesc condițiile legale prevăzute de Legea nr. 31/1990 privind societățile, republicată, pentru a avea calitatea de <b>asociat și administrator</b> al unei societăți cu răspundere limitată.</p>
+
+      <p><b>2.</b> <b>Nu mă aflu în niciuna dintre situațiile de incompatibilitate</b> prevăzute de lege pentru exercitarea calității de administrator, respectiv:</p>
+      <ul style="list-style:none;padding-left:1em">
+        <li>• nu am fost condamnat pentru infracțiuni de corupție, delapidare, înșelăciune, fals, abuz de încredere, gestiune frauduloasă, evaziune fiscală sau alte infracțiuni prevăzute de Legea nr. 31/1990;</li>
+        <li>• nu am fost declarat incapabil printr-o hotărâre judecătorească definitivă;</li>
+        <li>• nu există nicio interdicție de a exercita funcția de administrator.</li>
+      </ul>
+
+      <p><b>3.</b> Sunt de acord să exercit funcția de <b>administrator unic</b> al societății, pe perioadă nedeterminată, cu puteri depline de reprezentare.</p>
+
+      <p><b>4.</b> Cunosc obligațiile legale și statutare ce îmi revin în calitate de asociat unic și administrator al societății.</p>
+
+      <p><b>5.</b> Mă oblig să comunic în scris Oficiului Național al Registrului Comerțului orice modificare survenită cu privire la cele declarate, în termen de 15 zile.</p>
+
+      <p>Dată în _______________, astăzi _______________.</p>
+
+      <div style="text-align:right;margin-top:3em">
+        <p><b>DECLARANT,</b></p>
+        <p>${aNume}</p>
+        <p>Semnătură: _______________________</p>
+      </div>
+    `;
+  },
+
+  renderDocx(d) {
+    const aNume = v('asociat.nume') + ' ' + v('asociat.prenume');
+    const den = v('companie.denumire');
+
+    const content = [
+      { heading: 'DECLARAȚIE PE PROPRIA RĂSPUNDERE' },
+      { center: '(asociat unic și administrator)', italics: true },
+      '',
+      { mixed: [
+        'Subsemnatul, ',
+        { text: aNume, bold: true },
+        `, cetățean român, născut la data de ${v('asociat.dataNasterii')} în ${v('asociat.loculNasterii')}, domiciliat în ${v('asociat.domiciliu')}, identificat cu CI seria ${v('asociat.serieCi')} nr. ${v('asociat.nrCi')}, având CNP `,
+        { text: v('asociat.cnp'), bold: true },
+        `, în calitate de viitor `,
+        { text: 'asociat unic și administrator', bold: true },
+        ` al societății `,
+        { text: den, bold: true },
+        `, în curs de constituire,`
+      ]},
+      { center: 'cunoscând prevederile art. 326 din Codul Penal privind falsul în declarații,', italics: true },
+      '',
+      { center: 'DECLAR PE PROPRIA RĂSPUNDERE:', bold: true },
+      '',
+      { mixed: [
+        { text: '1. ', bold: true },
+        `Îndeplinesc condițiile legale prevăzute de Legea nr. 31/1990 privind societățile, republicată, pentru a avea calitatea de `,
+        { text: 'asociat și administrator', bold: true },
+        ` al unei societăți cu răspundere limitată.`
+      ]},
+      { mixed: [
+        { text: '2. ', bold: true },
+        { text: 'Nu mă aflu în niciuna dintre situațiile de incompatibilitate', bold: true },
+        ' prevăzute de lege pentru exercitarea calității de administrator, respectiv:'
+      ]},
+      '• nu am fost condamnat pentru infracțiuni de corupție, delapidare, înșelăciune, fals, abuz de încredere, gestiune frauduloasă, evaziune fiscală sau alte infracțiuni prevăzute de Legea nr. 31/1990;',
+      '• nu am fost declarat incapabil printr-o hotărâre judecătorească definitivă;',
+      '• nu există nicio interdicție de a exercita funcția de administrator.',
+      { mixed: [
+        { text: '3. ', bold: true },
+        `Sunt de acord să exercit funcția de `,
+        { text: 'administrator unic', bold: true },
+        ` al societății, pe perioadă nedeterminată, cu puteri depline de reprezentare.`
+      ]},
+      { mixed: [
+        { text: '4. ', bold: true },
+        `Cunosc obligațiile legale și statutare ce îmi revin în calitate de asociat unic și administrator al societății.`
+      ]},
+      { mixed: [
+        { text: '5. ', bold: true },
+        `Mă oblig să comunic în scris Oficiului Național al Registrului Comerțului orice modificare survenită cu privire la cele declarate, în termen de 15 zile.`
+      ]},
+      '',
+      'Dată în _______________, astăzi _______________.',
+      '',
+      '',
+      { right: 'DECLARANT,', bold: true },
+      { right: aNume },
+      { right: 'Semnătură: _______________________' },
+    ];
+
+    return buildDocxDocument(d, buildDocxParagraphs(d, content));
+  }
+};
+
+// ============================================
+// DOCUMENT 6: ACT CONSTITUTIV
+// ============================================
+const DOC_ACT = {
+  id: 'act_constitutiv',
+  title: 'Act constitutiv',
+  desc: 'Statutul societății — documentul principal de constituire (SRL cu asociat unic).',
+  filename: 'Act_constitutiv',
+  required: [
+    { path: 'asociat.nume', label: 'nume asociat' },
+    { path: 'asociat.cnp', label: 'CNP asociat' },
+    { path: 'companie.denumire', label: 'denumire companie' },
+    { path: 'companie.capitalSocial', label: 'capital social' },
+    { path: 'companie.caenPrincipal', label: 'CAEN principal' },
+    { path: 'imobil.adresa', label: 'adresa sediu' },
+  ],
+
+  renderHtml() {
+    const aNume = vh('asociat.nume') + ' ' + vh('asociat.prenume');
+    const den = vh('companie.denumire');
+    const cap = vh('companie.capitalSocial');
+    const ps = vh('companie.nrPartiSociale');
+    const vps = vh('companie.valoareParteSociala');
+
+    return `
+      <h1>ACT CONSTITUTIV</h1>
+      <p style="text-align:center"><b>al societății ${den}</b></p>
+      <p style="text-align:center;font-style:italic">Societate cu răspundere limitată cu asociat unic</p>
+
+      <h2>I. ASOCIATUL UNIC</h2>
+      <p>Subsemnatul, <b>${aNume}</b>, cetățean român, născut la data de ${vh('asociat.dataNasterii')} în ${vh('asociat.loculNasterii')}, domiciliat în ${vh('asociat.domiciliu')}, identificat cu CI seria ${vh('asociat.serieCi')} nr. ${vh('asociat.nrCi')}, eliberată de ${vh('asociat.emitentCi')} la data de ${vh('asociat.dataEmiteriiCi')}, având CNP <b>${vh('asociat.cnp')}</b>, în calitate de unic fondator,</p>
+      <p>am hotărât constituirea unei societăți cu răspundere limitată cu asociat unic, conform prevederilor Legii nr. 31/1990 privind societățile, republicată, cu modificările și completările ulterioare, cu următoarele dispoziții:</p>
+
+      <h2>II. FORMA JURIDICĂ, DENUMIREA, SEDIUL</h2>
+      <p><b>Art. 1.</b> Forma juridică: <b>societate cu răspundere limitată cu asociat unic</b>, denumită în continuare "Societatea".</p>
+      <p><b>Art. 2.</b> Denumirea: <b>${den}</b>, conform rezervării de denumire nr. ${vh('companie.nrRezervareDenumire')} din data de ${vh('companie.dataRezervareDenumire')}.</p>
+      <p><b>Art. 3.</b> Sediul social: <b>${vh('imobil.adresa')}</b>, stabilit în baza contractului de comodat.</p>
+      <p><b>Art. 4.</b> Sediul social poate fi schimbat prin hotărârea asociatului unic, cu respectarea formalităților legale.</p>
+
+      <h2>III. DURATA</h2>
+      <p><b>Art. 5.</b> Durata Societății este <b>${vh('companie.durata')}</b>, începând cu data înmatriculării la Registrul Comerțului.</p>
+
+      <h2>IV. OBIECTUL DE ACTIVITATE</h2>
+      <p><b>Art. 6. Obiectul principal de activitate:</b></p>
+      <p style="padding-left:1em">• CAEN <b>${vh('companie.caenPrincipal')}</b> — ${vh('companie.caenPrincipalDesc')}</p>
+      <p><b>Art. 7. Obiecte secundare de activitate</b> (coduri CAEN secundare): ${vh('companie.caenSecundare')}.</p>
+      <p><b>Art. 8.</b> Societatea poate desfășura orice alte activități permise de lege, în conformitate cu codurile CAEN aprobate.</p>
+
+      <h2>V. CAPITALUL SOCIAL ȘI PĂRȚILE SOCIALE</h2>
+      <p><b>Art. 9.</b> Capitalul social subscris și vărsat integral este de <b>${cap} lei</b>, divizat în <b>${ps} părți sociale</b> a câte <b>${vps} lei</b> fiecare, deținute în totalitate de asociatul unic.</p>
+      <p><b>Art. 10.</b> Aportul la capitalul social este în numerar, depus integral într-un cont bancar deschis la dispoziția Societății.</p>
+      <p><b>Art. 11.</b> Asociatul unic deține <b>100% din capitalul social și drepturile de vot</b>.</p>
+      <p><b>Art. 12.</b> Capitalul social poate fi majorat sau redus prin hotărârea asociatului unic, cu respectarea legii.</p>
+
+      <h2>VI. ADMINISTRAREA SOCIETĂȚII</h2>
+      <p><b>Art. 13.</b> Societatea este administrată de un <b>administrator unic</b>, în persoana asociatului unic <b>${aNume}</b>, CNP ${vh('asociat.cnp')}, numit pe perioadă nedeterminată.</p>
+      <p><b>Art. 14.</b> Administratorul reprezintă Societatea în relațiile cu terții și are puteri depline de gestiune, putând:</p>
+      <p style="padding-left:1em">• să încheie orice acte juridice în numele Societății;<br>• să deschidă, să administreze și să închidă conturi bancare;<br>• să angajeze și să concedieze personal;<br>• să reprezinte Societatea în fața autorităților publice și a instanțelor judecătorești;<br>• să semneze documente fiscale și contabile.</p>
+      <p><b>Art. 15.</b> Mandatul administratorului poate înceta prin demisie, prin revocare (în cazuri excepționale, prin hotărâre asociat unic) sau prin decesul administratorului.</p>
+
+      <h2>VII. HOTĂRÂRILE ASOCIATULUI UNIC</h2>
+      <p><b>Art. 16.</b> Asociatul unic exercită atribuțiile Adunării Generale a Asociaților și ia hotărâri privind:</p>
+      <p style="padding-left:1em">• aprobarea bilanțului și a contului de profit și pierdere;<br>• distribuția profitului;<br>• majorarea sau reducerea capitalului social;<br>• modificarea actului constitutiv;<br>• dizolvarea Societății;<br>• alte aspecte importante privind activitatea Societății.</p>
+      <p><b>Art. 17.</b> Hotărârile asociatului unic se consemnează într-un registru special și produc efecte de la data adoptării.</p>
+
+      <h2>VIII. EXERCIȚIUL FINANCIAR. BENEFICII ȘI PIERDERI</h2>
+      <p><b>Art. 18.</b> Exercițiul financiar începe la 1 ianuarie și se încheie la 31 decembrie al fiecărui an. Primul exercițiu financiar începe la data înmatriculării și se încheie la 31 decembrie al anului respectiv.</p>
+      <p><b>Art. 19.</b> Profitul net al Societății, după plata impozitelor, este distribuit ca dividend asociatului unic sau este reinvestit, conform hotărârii acestuia.</p>
+      <p><b>Art. 20.</b> Pierderile se acoperă din capitalul social, conform legii.</p>
+
+      <h2>IX. CESIUNEA PĂRȚILOR SOCIALE</h2>
+      <p><b>Art. 21.</b> Părțile sociale pot fi cesionate integral sau parțial către terți, prin contract de cesiune încheiat în formă scrisă, cu respectarea procedurii legale și cu înregistrarea modificării la Registrul Comerțului.</p>
+      <p><b>Art. 22.</b> În cazul cesiunii părților sociale către un terț, Societatea devine cu asociați multipli, iar prezentul act constitutiv va fi modificat în consecință.</p>
+
+      <h2>X. DIZOLVAREA ȘI LICHIDAREA</h2>
+      <p><b>Art. 23.</b> Societatea se dizolvă în cazurile prevăzute de Legea nr. 31/1990, respectiv:</p>
+      <p style="padding-left:1em">• prin hotărârea asociatului unic;<br>• prin expirarea duratei (dacă este cazul);<br>• prin imposibilitatea realizării obiectului de activitate;<br>• prin reducerea capitalului social sub minimul legal, dacă nu se completează;<br>• alte cazuri prevăzute de lege.</p>
+      <p><b>Art. 24.</b> Lichidarea Societății se face conform legii. După plata datoriilor, activele rămase revin asociatului unic.</p>
+
+      <h2>XI. LITIGII</h2>
+      <p><b>Art. 25.</b> Eventualele litigii dintre Societate și terți, sau cele legate de interpretarea prezentului act constitutiv, se soluționează pe cale amiabilă; în caz contrar, sunt de competența instanțelor judecătorești de la sediul Societății.</p>
+
+      <h2>XII. DISPOZIȚII FINALE</h2>
+      <p><b>Art. 26.</b> Prezentul Act Constitutiv produce efecte de la data înmatriculării Societății la Registrul Comerțului.</p>
+      <p><b>Art. 27.</b> Modificările Actului Constitutiv se fac prin hotărârea asociatului unic, cu respectarea formalităților de publicitate prevăzute de lege.</p>
+      <p><b>Art. 28.</b> Pentru ceea ce nu este prevăzut în prezentul Act Constitutiv, se aplică dispozițiile Legii nr. 31/1990 și ale legislației române în vigoare.</p>
+
+      <p style="font-style:italic">Prezentul Act Constitutiv a fost redactat și semnat astăzi, _______________, în 3 (trei) exemplare originale.</p>
+
+      <div style="text-align:right;margin-top:3em">
+        <p><b>ASOCIAT UNIC,</b></p>
+        <p>${aNume}</p>
+        <p>Semnătură: _______________________</p>
+      </div>
+    `;
+  },
+
+  renderDocx(d) {
+    const aNume = v('asociat.nume') + ' ' + v('asociat.prenume');
+    const den = v('companie.denumire');
+
+    const content = [
+      { heading: 'ACT CONSTITUTIV' },
+      { center: `al societății ${den}`, bold: true },
+      { center: 'Societate cu răspundere limitată cu asociat unic', italics: true },
+      '',
+      { subheading: 'I. ASOCIATUL UNIC' },
+      { mixed: [
+        'Subsemnatul, ',
+        { text: aNume, bold: true },
+        `, cetățean român, născut la data de ${v('asociat.dataNasterii')} în ${v('asociat.loculNasterii')}, domiciliat în ${v('asociat.domiciliu')}, identificat cu CI seria ${v('asociat.serieCi')} nr. ${v('asociat.nrCi')}, eliberată de ${v('asociat.emitentCi')} la data de ${v('asociat.dataEmiteriiCi')}, având CNP `,
+        { text: v('asociat.cnp'), bold: true },
+        `, în calitate de unic fondator,`
+      ]},
+      'am hotărât constituirea unei societăți cu răspundere limitată cu asociat unic, conform prevederilor Legii nr. 31/1990 privind societățile, republicată, cu modificările și completările ulterioare, cu următoarele dispoziții:',
+      { subheading: 'II. FORMA JURIDICĂ, DENUMIREA, SEDIUL' },
+      { mixed: [{ text: 'Art. 1. ', bold: true }, 'Forma juridică: ', { text: 'societate cu răspundere limitată cu asociat unic', bold: true }, ', denumită în continuare "Societatea".'] },
+      { mixed: [{ text: 'Art. 2. ', bold: true }, 'Denumirea: ', { text: den, bold: true }, `, conform rezervării de denumire nr. ${v('companie.nrRezervareDenumire')} din data de ${v('companie.dataRezervareDenumire')}.`] },
+      { mixed: [{ text: 'Art. 3. ', bold: true }, 'Sediul social: ', { text: v('imobil.adresa'), bold: true }, ', stabilit în baza contractului de comodat anexat.'] },
+      { mixed: [{ text: 'Art. 4. ', bold: true }, 'Sediul social poate fi schimbat prin hotărârea asociatului unic, cu respectarea formalităților legale.'] },
+      { subheading: 'III. DURATA' },
+      { mixed: [{ text: 'Art. 5. ', bold: true }, 'Durata Societății este ', { text: v('companie.durata'), bold: true }, ', începând cu data înmatriculării la Registrul Comerțului.'] },
+      { subheading: 'IV. OBIECTUL DE ACTIVITATE' },
+      { mixed: [{ text: 'Art. 6. Obiectul principal de activitate: ', bold: true }, 'CAEN ', { text: v('companie.caenPrincipal'), bold: true }, ` — ${v('companie.caenPrincipalDesc')}.`] },
+      { mixed: [{ text: 'Art. 7. ', bold: true }, `Obiecte secundare de activitate (coduri CAEN secundare): ${v('companie.caenSecundare')}.`] },
+      { mixed: [{ text: 'Art. 8. ', bold: true }, 'Societatea poate desfășura orice alte activități permise de lege, în conformitate cu codurile CAEN aprobate.'] },
+      { subheading: 'V. CAPITALUL SOCIAL ȘI PĂRȚILE SOCIALE' },
+      { mixed: [
+        { text: 'Art. 9. ', bold: true },
+        'Capitalul social subscris și vărsat integral este de ',
+        { text: `${v('companie.capitalSocial')} lei`, bold: true },
+        ', divizat în ',
+        { text: `${v('companie.nrPartiSociale')} părți sociale`, bold: true },
+        ' a câte ',
+        { text: `${v('companie.valoareParteSociala')} lei`, bold: true },
+        ' fiecare, deținute în totalitate de asociatul unic.'
+      ]},
+      { mixed: [{ text: 'Art. 10. ', bold: true }, 'Aportul la capitalul social este în numerar, depus integral într-un cont bancar deschis la dispoziția Societății.'] },
+      { mixed: [{ text: 'Art. 11. ', bold: true }, 'Asociatul unic deține ', { text: '100% din capitalul social și drepturile de vot', bold: true }, '.'] },
+      { mixed: [{ text: 'Art. 12. ', bold: true }, 'Capitalul social poate fi majorat sau redus prin hotărârea asociatului unic, cu respectarea legii.'] },
+      { subheading: 'VI. ADMINISTRAREA SOCIETĂȚII' },
+      { mixed: [{ text: 'Art. 13. ', bold: true }, 'Societatea este administrată de un ', { text: 'administrator unic', bold: true }, ', în persoana asociatului unic ', { text: aNume, bold: true }, `, CNP ${v('asociat.cnp')}, numit pe perioadă nedeterminată.`] },
+      { mixed: [{ text: 'Art. 14. ', bold: true }, 'Administratorul reprezintă Societatea în relațiile cu terții și are puteri depline de gestiune, putând: să încheie orice acte juridice în numele Societății; să deschidă, să administreze și să închidă conturi bancare; să angajeze și să concedieze personal; să reprezinte Societatea în fața autorităților publice și a instanțelor judecătorești; să semneze documente fiscale și contabile.'] },
+      { mixed: [{ text: 'Art. 15. ', bold: true }, 'Mandatul administratorului poate înceta prin demisie, prin revocare (în cazuri excepționale, prin hotărâre asociat unic) sau prin decesul administratorului.'] },
+      { subheading: 'VII. HOTĂRÂRILE ASOCIATULUI UNIC' },
+      { mixed: [{ text: 'Art. 16. ', bold: true }, 'Asociatul unic exercită atribuțiile Adunării Generale a Asociaților și ia hotărâri privind: aprobarea bilanțului și a contului de profit și pierdere; distribuția profitului; majorarea sau reducerea capitalului social; modificarea actului constitutiv; dizolvarea Societății; alte aspecte importante privind activitatea Societății.'] },
+      { mixed: [{ text: 'Art. 17. ', bold: true }, 'Hotărârile asociatului unic se consemnează într-un registru special și produc efecte de la data adoptării.'] },
+      { subheading: 'VIII. EXERCIȚIUL FINANCIAR. BENEFICII ȘI PIERDERI' },
+      { mixed: [{ text: 'Art. 18. ', bold: true }, 'Exercițiul financiar începe la 1 ianuarie și se încheie la 31 decembrie al fiecărui an. Primul exercițiu financiar începe la data înmatriculării și se încheie la 31 decembrie al anului respectiv.'] },
+      { mixed: [{ text: 'Art. 19. ', bold: true }, 'Profitul net al Societății, după plata impozitelor, este distribuit ca dividend asociatului unic sau este reinvestit, conform hotărârii acestuia.'] },
+      { mixed: [{ text: 'Art. 20. ', bold: true }, 'Pierderile se acoperă din capitalul social, conform legii.'] },
+      { subheading: 'IX. CESIUNEA PĂRȚILOR SOCIALE' },
+      { mixed: [{ text: 'Art. 21. ', bold: true }, 'Părțile sociale pot fi cesionate integral sau parțial către terți, prin contract de cesiune încheiat în formă scrisă, cu respectarea procedurii legale și cu înregistrarea modificării la Registrul Comerțului.'] },
+      { mixed: [{ text: 'Art. 22. ', bold: true }, 'În cazul cesiunii părților sociale către un terț, Societatea devine cu asociați multipli, iar prezentul act constitutiv va fi modificat în consecință.'] },
+      { subheading: 'X. DIZOLVAREA ȘI LICHIDAREA' },
+      { mixed: [{ text: 'Art. 23. ', bold: true }, 'Societatea se dizolvă în cazurile prevăzute de Legea nr. 31/1990: prin hotărârea asociatului unic; prin expirarea duratei (dacă este cazul); prin imposibilitatea realizării obiectului de activitate; prin reducerea capitalului social sub minimul legal, dacă nu se completează; alte cazuri prevăzute de lege.'] },
+      { mixed: [{ text: 'Art. 24. ', bold: true }, 'Lichidarea Societății se face conform legii. După plata datoriilor, activele rămase revin asociatului unic.'] },
+      { subheading: 'XI. LITIGII' },
+      { mixed: [{ text: 'Art. 25. ', bold: true }, 'Eventualele litigii dintre Societate și terți, sau cele legate de interpretarea prezentului act constitutiv, se soluționează pe cale amiabilă; în caz contrar, sunt de competența instanțelor judecătorești de la sediul Societății.'] },
+      { subheading: 'XII. DISPOZIȚII FINALE' },
+      { mixed: [{ text: 'Art. 26. ', bold: true }, 'Prezentul Act Constitutiv produce efecte de la data înmatriculării Societății la Registrul Comerțului.'] },
+      { mixed: [{ text: 'Art. 27. ', bold: true }, 'Modificările Actului Constitutiv se fac prin hotărârea asociatului unic, cu respectarea formalităților de publicitate prevăzute de lege.'] },
+      { mixed: [{ text: 'Art. 28. ', bold: true }, 'Pentru ceea ce nu este prevăzut în prezentul Act Constitutiv, se aplică dispozițiile Legii nr. 31/1990 și ale legislației române în vigoare.'] },
+      '',
+      'Prezentul Act Constitutiv a fost redactat și semnat astăzi, _______________, în 3 (trei) exemplare originale.',
+      '',
+      '',
+      { right: 'ASOCIAT UNIC,', bold: true },
+      { right: aNume },
+      { right: 'Semnătură: _______________________' },
+    ];
+
+    return buildDocxDocument(d, buildDocxParagraphs(d, content));
+  }
+};
+
+// ============================================
+// REGISTRY
+// ============================================
+const DOCUMENTS = [DOC_ACT, DOC_HOTARARE, DOC_COMODAT, DOC_DECLARATIE, DOC_BENEFICIAR, DOC_DECL_ASOCIAT];
+
+</script>
+<script>
+// ============================================
+// DOCUMENT VIEW
+// ============================================
+function renderDocumentsList() {
+  const container = document.getElementById('documents-list');
+  if (!container) return;
+  container.innerHTML = DOCUMENTS.map(d => {
+    const status = checkDocStatus(d);
+    const statusClass = status.complete ? 'ready' : (status.filled > 0 ? 'partial' : '');
+    const statusLabel = status.complete ? 'Date complete' : (status.filled > 0 ? 'Parțial: ' + status.filled + '/' + status.total : 'Lipsesc date');
+    return '<div class="doc-card">' +
+      '<div class="doc-card-header">' +
+        '<h3 class="doc-card-title">' + d.title + '</h3>' +
+        '<span class="doc-card-status ' + statusClass + '">' + statusLabel + '</span>' +
+      '</div>' +
+      '<p class="doc-card-desc">' + d.desc + '</p>' +
+      (status.missing.length > 0
+        ? '<div class="doc-card-missing show">Lipsesc: ' + status.missing.join(', ') + '</div>'
+        : '') +
+      '<div class="doc-actions">' +
+        '<button class="small" onclick="previewDoc(\'' + d.id + '\')"><i class="ti ti-eye"></i>Previzualizează</button>' +
+        '<button class="small primary" onclick="downloadDocx(\'' + d.id + '\')"><i class="ti ti-download"></i>Word (.docx)</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function checkDocStatus(doc) {
+  const required = doc.required || [];
+  let filled = 0;
+  const missing = [];
+  required.forEach(r => {
+    const [section, field] = r.path.split('.');
+    if (state.data[section] && state.data[section][field] && String(state.data[section][field]).trim() !== '') {
+      filled++;
+    } else {
+      missing.push(r.label);
+    }
+  });
+  return { filled, total: required.length, complete: filled === required.length, missing };
+}
+
+function getValue(path, fallback) {
+  const [section, field] = path.split('.');
+  const v = state.data[section] && state.data[section][field];
+  if (v == null || String(v).trim() === '') return fallback || '[' + field.toUpperCase() + ']';
+  return v;
+}
+
+function previewDoc(docId) {
+  const doc = DOCUMENTS.find(d => d.id === docId);
+  if (!doc) return;
+  currentDoc = doc;
+  document.getElementById('modal-title').textContent = doc.title;
+  document.getElementById('modal-body').innerHTML = doc.renderHtml();
+  document.getElementById('modal-backdrop').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal-backdrop').classList.remove('show');
+}
+
+async function downloadDocx(docId) {
+  const doc = DOCUMENTS.find(d => d.id === docId);
+  if (!doc) return;
+  currentDoc = doc;
+  await generateAndDownloadDocx(doc);
+}
+
+async function downloadCurrentDocx() {
+  if (currentDoc) await generateAndDownloadDocx(currentDoc);
+}
+
+async function generateAndDownloadDocx(doc) {
+  try {
+    if (typeof window.docx === 'undefined') {
+      alert('Biblioteca Word nu s-a încărcat. Verifică conexiunea și reîncearcă.');
+      return;
+    }
+    const wordDoc = doc.renderDocx(window.docx);
+    const blob = await window.docx.Packer.toBlob(wordDoc);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = doc.filename + '.docx';
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    console.error(e);
+    alert('Eroare la generare: ' + e.message);
   }
 }
 
+function printCurrent() {
+  if (!currentDoc) return;
+  const w = window.open('', '_blank');
+  w.document.write('<html><head><title>' + currentDoc.title + '</title>' +
+    '<style>body{font-family:Arial,sans-serif;max-width:18cm;margin:2cm auto;padding:0 1cm;line-height:1.5;font-size:11pt;}' +
+    'h1{font-size:14pt;text-align:center;margin-bottom:1em;}' +
+    'h2{font-size:12pt;margin-top:1.2em;font-weight:bold;}' +
+    'p{text-align:justify;margin:0.5em 0;}' +
+    '.signatures{display:flex;justify-content:space-between;margin-top:3em;}' +
+    '.placeholder-missing{color:#d97706;font-weight:500;}</style></head><body>' +
+    currentDoc.renderHtml() + '</body></html>');
+  w.document.close();
+  setTimeout(() => w.print(), 500);
+}
+
+// ============================================
+// EXPORT / IMPORT / RESET
+// ============================================
 function exportJSON() {
   const data = JSON.stringify(state, null, 2);
   const blob = new Blob([data], { type: 'application/json' });
@@ -593,7 +1820,7 @@ function exportJSON() {
   const a = document.createElement('a');
   const date = new Date().toISOString().slice(0, 10);
   a.href = url;
-  a.download = 'air-rebuild-roadmap-' + date + '.json';
+  a.download = 'air-rebuild-backup-' + date + '.json';
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -605,29 +1832,43 @@ function importJSON(event) {
   reader.onload = (e) => {
     try {
       const parsed = JSON.parse(e.target.result);
-      if (parsed.checked || parsed.achievements) {
-        if (confirm('Înlocuiește progresul curent cu cel din fișier?')) {
+      if (parsed.checked != null || parsed.data != null) {
+        if (confirm('Înlocuiește toate datele curente cu cele din fișier?')) {
           state.checked = parsed.checked || {};
           state.achievements = parsed.achievements || {};
+          state.data = parsed.data || { asociat: {}, proprietar: {}, imobil: {}, companie: {}, banca: {}, oficial: {} };
           saveState();
-          renderAchievements();
-          renderPhases();
-          updateOverall();
+          location.reload();
         }
       } else {
         alert('Fișier invalid.');
       }
     } catch (err) {
-      alert('Eroare la citirea fișierului: ' + err.message);
+      alert('Eroare la citire: ' + err.message);
     }
     event.target.value = '';
   };
   reader.readAsText(file);
 }
 
+function resetAll() {
+  if (confirm('Sigur vrei să resetezi TOT? Toate datele și progresul vor fi șterse.')) {
+    if (confirm('Confirmă încă o dată — această acțiune este ireversibilă.')) {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(COLLAPSED_KEY);
+      location.reload();
+    }
+  }
+}
+
+// ============================================
+// INIT
+// ============================================
 loadState();
 renderAchievements();
 renderPhases();
+renderForms();
+renderDocumentsList();
 updateOverall();
 </script>
 </body>
